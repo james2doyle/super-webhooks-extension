@@ -244,23 +244,39 @@ function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText, a
     };
   } else if (type === 'link') {
     codeToExecute = function () {
+      let linkTitle = null;
       const links = document.querySelectorAll('a');
       for (let link of links) {
         if (link.href === arguments[0]) {
-          return link.title || link.getAttribute('aria-label') || link.innerText || null;
+          linkTitle = link.title || link.getAttribute('aria-label') || link.innerText || null;
         }
       }
-      return null;
+
+      return {
+        title: document.title,
+        description: document.querySelector('meta[name="description"]')?.getAttribute('content') || null,
+        keywords: document.querySelector('meta[name="keywords"]')?.getAttribute('content') || null,
+        favicon: document.querySelector('link[rel="icon"]')?.href || document.querySelector('link[rel="shortcut icon"]')?.href || null,
+        linkTitle,
+      }
     };
   } else if (type === 'image') {
     codeToExecute = function () {
+      let altText = null;
       const images = document.querySelectorAll('img');
       for (let img of images) {
         if (img.src === arguments[0]) {
-          return img.alt || null;
+          altText = img.alt || null;
         }
       }
-      return null;
+
+      return {
+        title: document.title,
+        description: document.querySelector('meta[name="description"]')?.getAttribute('content') || null,
+        keywords: document.querySelector('meta[name="keywords"]')?.getAttribute('content') || null,
+        favicon: document.querySelector('link[rel="icon"]')?.href || document.querySelector('link[rel="shortcut icon"]')?.href || null,
+        altText,
+      }
     };
   }
 
@@ -291,13 +307,11 @@ function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText, a
       payload.keywords = extractedData?.keywords || null;
       payload.favicon = extractedData?.favicon || null;
       payload.note = String(additionalContent).length > 0 ? additionalContent : null;
+      payload.linkTitle = extractedData?.linkTitle || null;
+      payload.altText = extractedData?.altText || null;
 
       if (type === 'selection') {
         payload.selectedText = selectionText;
-      } else if (type === 'link') {
-        payload.linkTitle = extractedData;
-      } else if (type === 'image') {
-        payload.altText = extractedData;
       }
 
       // Find webhook to get rate limit
