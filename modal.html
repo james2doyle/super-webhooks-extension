@@ -81,12 +81,14 @@
   </style>
 </head>
 <body>
-  <h2>Add a Note (Optional)</h2>
-  <textarea id="note-content" rows="10" placeholder="Enter your notes here..."></textarea>
-  <div class="buttons">
-    <button id="cancel-btn" class="btn btn-secondary">Cancel</button>
-    <button id="send-btn" class="btn btn-primary">Send</button>
-  </div>
+  <form id="note-form">
+    <h2>Add a Note (Optional)</h2>
+    <textarea id="note-content" rows="10" placeholder="Enter your notes here..."></textarea>
+    <div class="buttons">
+      <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+      <button type="submit" id="send-btn" class="btn btn-primary">Send</button>
+    </div>
+  </form>
   <script src="modal.js"></script>
 </body>
 </html>

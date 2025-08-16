@@ -1,13 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+	const noteForm = document.getElementById("note-form");
 	const noteTextarea = document.getElementById("note-content");
-	const sendButton = document.getElementById("send-btn");
 	const cancelButton = document.getElementById("cancel-btn");
 
 	// Focus the textarea automatically when the modal opens
 	noteTextarea.focus();
 
-	// Function to simulate Send button click
-	function sendNote() {
+	// Function to handle form submission
+	function handleFormSubmit(event) {
+		event.preventDefault(); // Prevent the default form submission
 		const note = noteTextarea.value.trim();
 		// Send the note content back to the background script
 		chrome.runtime.sendMessage(
@@ -22,8 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		);
 	}
 
-	// Handle Send button click
-	sendButton.addEventListener("click", sendNote);
+	// Handle form submission
+	noteForm.addEventListener("submit", handleFormSubmit);
 
 	// Handle Cancel button click
 	cancelButton.addEventListener("click", () => {
@@ -31,17 +32,5 @@ document.addEventListener("DOMContentLoaded", () => {
 		chrome.runtime.sendMessage({ type: "modalCanceled" }, () => {
 			window.close();
 		});
-	});
-
-	// Handle Enter key press in the textarea
-	noteTextarea.addEventListener("keydown", (event) => {
-		// Check if the Enter key was pressed (key code 13)
-		// and if the textarea content, after trimming whitespace, is empty.
-		if (event.key === "Enter" && noteTextarea.value.trim() === "") {
-			// Prevent the default Enter key behavior (new line)
-			event.preventDefault();
-			// Simulate a click on the Send button
-			sendButton.click();
-		}
 	});
 });
