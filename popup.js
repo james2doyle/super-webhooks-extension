@@ -78,6 +78,13 @@ function createWebhookCard(hook, index) {
     meta.appendChild(rateBadge);
   }
 
+  if (hook.enableNoteModal) {
+    const noteBadge = document.createElement('span');
+    noteBadge.className = 'badge badge-notes-enabled';
+    noteBadge.innerHTML = '<i class="fa fa-sticky-note"></i> Notes Enabled';
+    meta.appendChild(noteBadge);
+  }
+
   // Actions
   const actions = document.createElement('div');
   actions.className = 'webhook-actions';
@@ -180,6 +187,7 @@ function editWebhook(index) {
     document.getElementById('url').value = webhook.url;
     document.getElementById('name').value = webhook.name;
     document.getElementById('rateLimit').value = webhook.rateLimit || '';
+    document.getElementById('enableNoteModalWebhook').checked = webhook.enableNoteModal || false;
 
     // Update form UI for editing
     document.getElementById('form-title').innerHTML = '<i class="fa fa-edit"></i> Edit Webhook';
@@ -291,6 +299,7 @@ function clearForm() {
   document.getElementById('url').value = '';
   document.getElementById('name').value = '';
   document.getElementById('rateLimit').value = '';
+  document.getElementById('enableNoteModalWebhook').checked = false;
 
   // Reset form UI
   document.getElementById('form-title').innerHTML = '<i class="fa fa-plus"></i> Add New Webhook';
@@ -300,14 +309,13 @@ function clearForm() {
 
 // Settings management
 function loadSettings() {
-  chrome.storage.local.get({ settings: { notificationInterval: 5, enableNoteModal: true } }, function (data) {
+  chrome.storage.local.get({ settings: { notificationInterval: 5 } }, function (data) {
     if (chrome.runtime.lastError) {
       console.error('Failed to load settings:', chrome.runtime.lastError);
       return;
     }
 
     document.getElementById('notificationInterval').value = data.settings.notificationInterval;
-    document.getElementById('enableNoteModal').checked = data.settings.enableNoteModal;
   });
 }
 
@@ -381,6 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const rateLimit = document.getElementById('rateLimit').value.trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit) : 0;
+    const enableNoteModal = document.getElementById('enableNoteModalWebhook').checked;
 
     if (rateLimit && (isNaN(rateLimitValue) || rateLimitValue < 0)) {
       showError('Rate limit must be a positive number (seconds).');
@@ -400,10 +409,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (isEditing) {
         // Update existing webhook
-        webhooks[index] = { url, name, rateLimit: rateLimitValue };
+        webhooks[index] = { url, name, rateLimit: rateLimitValue, enableNoteModal };
       } else {
         // Add new webhook
-        webhooks.push({ url, name, rateLimit: rateLimitValue });
+        webhooks.push({ url, name, rateLimit: rateLimitValue, enableNoteModal });
       }
 
       chrome.storage.local.set({ webhooks: webhooks }, function () {
@@ -432,14 +441,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('settingsForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const notificationInterval = parseInt(document.getElementById('notificationInterval').value);
-    const enableNoteModal = document.getElementById('enableNoteModal').checked;
 
     if (isNaN(notificationInterval) || notificationInterval < 1 || notificationInterval > 60) {
       showError('Notification interval must be between 1 and 60 seconds.');
       return;
     }
 
-    const settings = { notificationInterval, enableNoteModal };
+    const settings = { notificationInterval };
 
     chrome.storage.local.set({ settings }, function () {
       if (chrome.runtime.lastError) {

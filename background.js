@@ -175,8 +175,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       const index = parseInt(indexPart);
       const webhook = data.webhooks[index];
       if (webhook) {
-        // Check if note modal is enabled in settings
-        const enableNoteModal = data.settings?.enableNoteModal !== false; // Default to true if not set
+        // Check if note modal is enabled for this specific webhook
+        const enableNoteModal = webhook.enableNoteModal;
         
         if (enableNoteModal) {
           // Store data needed for sending the webhook later
