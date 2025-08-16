@@ -27,15 +27,17 @@ This project isn't merely a functional tool; it's a personal statement and a bea
 - **Enhanced button states** for test/edit/delete actions
 - **Keyboard accessibility** throughout the interface
 - **Author attribution** with link to developer
+- **New 'Add Note' Modal**: Seamlessly attach optional notes to any webhook payload, enhancing context and flexibility.
 
 ## Features
 
 ### Core Functionality
 - **Register and Manage Webhooks**: Add, edit, and delete webhooks with friendly names, URLs, and rate limits
-- **Context Menu Integration**: Right-click on any page, link, image, or selected text to send data to registered webhooks
+- **Context Menu Integration**: Right-click on any page, link, image, or selected text to send data to registered webhooks. This now includes an optional modal for adding notes.
 - **Enhanced Data Collection**: Automatically extracts page metadata, timestamps, and context-specific information
 - **Webhook Testing**: Test webhooks directly from the popup with response time and status feedback
 - **Smart Notifications**: Desktop notifications with emoji feedback (✅/❌/⏳) for webhook status and queue updates
+- **Add Notes to Webhooks**: Attach optional free-form text notes to any webhook payload via a dedicated modal window.
 
 ### Advanced Features
 - **Rate Limiting**: Configure per-webhook rate limits to prevent API abuse
@@ -90,7 +92,8 @@ The extension sends different payload structures depending on the context:
   "title": "Article Title",
   "description": "Article description from meta tag",
   "keywords": "technology, programming, tutorial",
-  "favicon": "https://example.com/favicon.ico"
+  "favicon": "https://example.com/favicon.ico",
+  "note": "Additional note content from the modal"
 }
 ```
 
@@ -104,6 +107,7 @@ The extension sends different payload structures depending on the context:
   "description": "Article description from meta tag",
   "keywords": "technology, programming, tutorial",
   "favicon": "https://example.com/favicon.ico",
+  "note": "Additional note content from the modal",
   "selectedText": "This is the selected text from the page"
 }
 ```
@@ -114,7 +118,11 @@ The extension sends different payload structures depending on the context:
   "url": "https://linked-page.com",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "link",
-  "title": "Link title attribute",
+  "title": "Article Title",
+  "description": "Article description from meta tag",
+  "keywords": "technology, programming, tutorial",
+  "favicon": "https://example.com/favicon.ico",
+  "note": "Additional note content from the modal",
   "linkTitle": "Link title attribute"
 }
 ```
@@ -125,7 +133,11 @@ The extension sends different payload structures depending on the context:
   "url": "https://example.com/image.jpg",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "image",
-  "title": "Image alt text",
+  "title": "Article Title",
+  "description": "Article description from meta tag",
+  "keywords": "technology, programming, tutorial",
+  "favicon": "https://example.com/favicon.ico",
+  "note": "Additional note content from the modal",
   "altText": "Image alt text"
 }
 ```
@@ -169,11 +181,13 @@ Configure rate limits per webhook to prevent API abuse:
 chrome-webhook-extension/
 ├── manifest.json          # Extension manifest
 ├── background.js          # Service worker (queue system, context menus)
-├── popup.html            # Modern tabbed UI
-├── popup.js              # UI logic and form handling
-├── images/               # Extension icons
-├── CLAUDE.md            # Development guide
-└── README.md            # This file
+├── popup.html             # Modern tabbed UI
+├── popup.js               # UI logic and form handling
+├── modal.html             # HTML for the 'Add Note' modal
+├── modal.js               # Logic for the 'Add Note' modal
+├── images/                # Extension icons
+├── AGENTS.md              # Development guide
+└── README.md              # This file
 ```
 
 ### Key Technologies
@@ -210,6 +224,7 @@ Contributions are welcome! Please:
 - **NEW**: Collapsible form design for better space utilization
 - **NEW**: Enhanced accessibility with keyboard navigation
 - **NEW**: Configurable notification update intervals
+- **NEW**: Added an optional 'Add Note' modal to include free-form text with webhook payloads.
 - **IMPROVED**: Form validation and error handling
 - **IMPROVED**: Button states and visual feedback
 - **IMPROVED**: Typography and spacing consistency
