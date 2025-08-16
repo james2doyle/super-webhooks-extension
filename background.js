@@ -175,38 +175,65 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       const index = parseInt(indexPart);
       const webhook = data.webhooks[index];
       if (webhook) {
-        sendToWebhook(webhook.url, info, tab.id);
+        // Store data needed for sending the webhook later
+        const pendingWebhook = {
+          webhook: webhook,
+          info: info,
+          tabId: tab.id
+        };
+        chrome.storage.local.set({ pendingWebhook: pendingWebhook }, () => {
+          // Open the modal window
+          chrome.windows.create({
+            url: 'modal.html',
+            type: 'popup',
+            width: 500,
+            height: 400
+          });
+        });
       }
     });
   }
 });
 
-function sendToWebhook(webhookUrl, info, tabId) {
-  if (info.linkUrl) {
-    extractDataAndSend(webhookUrl, info.linkUrl, 'link', tabId, null);
-  } else if (info.srcUrl) {
-    extractDataAndSend(webhookUrl, info.srcUrl, 'image', tabId, null);
-  } else {
-    // Page context: check if text is selected
-    const type = info.selectionText ? 'selection' : 'page';
-    const urlToSend = info.pageUrl;
-    extractDataAndSend(webhookUrl, urlToSend, type, tabId, info.selectionText);
-  }
-}
+// Listener for messages from the modal
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'sendWebhookWithNote') {
+    chrome.storage.local.get('pendingWebhook', (data) => {
+      if (data.pendingWebhook) {
+        const { webhook, info, tabId } = data.pendingWebhook;
+        const additionalContent = request.note;
 
-function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText) {
+        // Determine context and extract data
+        if (info.linkUrl) {
+          extractDataAndSend(webhook.url, info.linkUrl, 'link', tabId, null, additionalContent);
+        } else if (info.srcUrl) {
+          extractDataAndSend(webhook.url, info.srcUrl, 'image', tabId, null, additionalContent);
+        } else {
+          const type = info.selectionText ? 'selection' : 'page';
+          const urlToSend = info.pageUrl;
+          extractDataAndSend(webhook.url, urlToSend, type, tabId, info.selectionText, additionalContent);
+        }
+
+        // Clean up the stored data
+        chrome.storage.local.remove('pendingWebhook');
+        sendResponse({status: "sent"});
+      }
+    });
+  } else if (request.type === 'modalCanceled') {
+    // Clean up the stored data if the user cancels
+    chrome.storage.local.remove('pendingWebhook', () => {
+        // This callback ensures storage is cleared before we respond
+        sendResponse({ status: "canceled" });
+    });
+  }
+  return true; // Crucial for async sendResponse
+});
+
+
+function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText, additionalContent) {
   let codeToExecute;
 
-  if (type === 'page') {
-    codeToExecute = function () {
-      return {
-        title: document.title,
-        description: document.querySelector('meta[name="description"]')?.getAttribute('content') || null,
-        keywords: document.querySelector('meta[name="keywords"]')?.getAttribute('content') || null,
-        favicon: document.querySelector('link[rel="icon"]')?.href || document.querySelector('link[rel="shortcut icon"]')?.href || null
-      };
-    };
-  } else if (type === 'selection') {
+  if (type === 'page' || type === 'selection') {
     codeToExecute = function () {
       return {
         title: document.title,
@@ -244,21 +271,25 @@ function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText) {
   }, (injectionResults) => {
     if (chrome.runtime.lastError) {
       console.error('Script injection failed:', chrome.runtime.lastError.message);
-      return;
     }
-    const extractedData = injectionResults[0]?.result;
-    
+    const extractedData = injectionResults && injectionResults[0] ? injectionResults[0].result : null;
+
     // Find webhook name for notification
     chrome.storage.local.get('webhooks', function (data) {
       const webhook = data.webhooks?.find(wh => wh.url === webhookUrl);
       const webhookName = webhook ? webhook.name : 'Webhook';
-      
+
       // Build enhanced payload
       const payload = {
         url: urlToSend,
         timestamp: new Date().toISOString(),
         type: type
       };
+
+      // Add note if it exists
+      if (additionalContent) {
+        payload.note = additionalContent;
+      }
 
       if (type === 'page') {
         payload.title = extractedData?.title || null;
