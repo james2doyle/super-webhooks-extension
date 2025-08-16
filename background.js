@@ -286,27 +286,17 @@ function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText, a
         type: type
       };
 
-      // Add note if it exists
-      if (additionalContent) {
-        payload.note = additionalContent;
-      }
+      payload.title = extractedData?.title || null;
+      payload.description = extractedData?.description || null;
+      payload.keywords = extractedData?.keywords || null;
+      payload.favicon = extractedData?.favicon || null;
+      payload.note = String(additionalContent).length > 0 ? additionalContent : null;
 
-      if (type === 'page') {
-        payload.title = extractedData?.title || null;
-        payload.description = extractedData?.description || null;
-        payload.keywords = extractedData?.keywords || null;
-        payload.favicon = extractedData?.favicon || null;
-      } else if (type === 'selection') {
-        payload.title = extractedData?.title || null;
-        payload.description = extractedData?.description || null;
-        payload.keywords = extractedData?.keywords || null;
-        payload.favicon = extractedData?.favicon || null;
+      if (type === 'selection') {
         payload.selectedText = selectionText;
       } else if (type === 'link') {
-        payload.title = extractedData;
         payload.linkTitle = extractedData;
       } else if (type === 'image') {
-        payload.title = extractedData;
         payload.altText = extractedData;
       }
 
