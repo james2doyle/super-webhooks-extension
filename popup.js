@@ -12,11 +12,11 @@ function showMessage(message, type = 'error') {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message message-${type}`;
   messageDiv.textContent = message;
-  
+
   // Clear existing messages
   container.innerHTML = '';
   container.appendChild(messageDiv);
-  
+
   setTimeout(() => {
     messageDiv.classList.add('hidden');
     setTimeout(() => messageDiv.remove(), 300);
@@ -40,7 +40,7 @@ function switchTab(tabName) {
       btn.classList.add('active');
     }
   });
-  
+
   // Update tab content
   document.querySelectorAll('.tab-content').forEach(content => {
     content.classList.remove('active');
@@ -51,69 +51,69 @@ function switchTab(tabName) {
 function createWebhookCard(hook, index) {
   const card = document.createElement('div');
   card.className = 'webhook-card';
-  
+
   const header = document.createElement('div');
   header.className = 'webhook-header';
-  
+
   const titleContainer = document.createElement('div');
   const title = document.createElement('h4');
   title.className = 'webhook-title';
   title.textContent = hook.name;
-  
+
   const url = document.createElement('div');
   url.className = 'webhook-url';
   url.textContent = hook.url;
-  
+
   titleContainer.appendChild(title);
   titleContainer.appendChild(url);
-  
+
   // Meta badges
   const meta = document.createElement('div');
   meta.className = 'webhook-meta';
-  
+
   if (hook.rateLimit && hook.rateLimit > 0) {
     const rateBadge = document.createElement('span');
     rateBadge.className = 'badge badge-rate-limit';
     rateBadge.textContent = `${hook.rateLimit}s limit`;
     meta.appendChild(rateBadge);
   }
-  
+
   // Actions
   const actions = document.createElement('div');
   actions.className = 'webhook-actions';
-  
+
   const testButton = document.createElement('button');
   testButton.className = 'btn btn-sm btn-secondary';
   testButton.innerHTML = '<i class="fa fa-vial"></i> Test';
   testButton.onclick = function () {
     testWebhook(index, testButton);
   };
-  
+
   const editButton = document.createElement('button');
   editButton.className = 'btn btn-sm btn-secondary';
   editButton.innerHTML = '<i class="fa fa-edit"></i> Edit';
   editButton.onclick = function () {
     editWebhook(index);
   };
-  
+
   const deleteButton = document.createElement('button');
   deleteButton.className = 'btn btn-sm btn-danger';
   deleteButton.innerHTML = '<i class="fa fa-trash"></i>';
   deleteButton.onclick = function () {
     handleDeleteClick(deleteButton, index);
   };
-  
+
   actions.appendChild(testButton);
   actions.appendChild(editButton);
   actions.appendChild(deleteButton);
-  
+
   header.appendChild(titleContainer);
   card.appendChild(header);
   if (meta.children.length > 0) {
     card.appendChild(meta);
   }
   card.appendChild(actions);
-  
+
   return card;
 }
 
@@ -128,7 +128,7 @@ function loadWebhooks() {
     const list = document.getElementById('webhookList');
     const emptyState = document.getElementById('empty-state');
     list.innerHTML = '';
-    
+
     if (data.webhooks && data.webhooks.length > 0) {
       emptyState.classList.add('hidden');
       data.webhooks.forEach(function (hook, index) {
@@ -150,7 +150,7 @@ function handleDeleteClick(button, index) {
     button.innerHTML = '<i class="fa fa-check"></i> Confirm?';
     button.classList.add('confirm-delete', 'btn-warning');
     button.classList.remove('btn-danger');
-    
+
     // Revert if clicked elsewhere
     document.addEventListener('click', function eventListener(e) {
       if (!button.contains(e.target)) {
@@ -167,25 +167,25 @@ function editWebhook(index) {
   chrome.storage.local.get('webhooks', function (data) {
     const webhooks = data.webhooks;
     const webhook = webhooks[index];
-    
+
     // Switch to webhooks tab if not already there
     switchTab('webhooks');
-    
+
     // Show and expand form
     if (window.formToggleFunctions) {
       window.formToggleFunctions.showForm();
     }
-    
+
     // Fill form
     document.getElementById('url').value = webhook.url;
     document.getElementById('name').value = webhook.name;
     document.getElementById('rateLimit').value = webhook.rateLimit || '';
-    
+
     // Update form UI for editing
     document.getElementById('form-title').innerHTML = '<i class="fa fa-edit"></i> Edit Webhook';
     document.getElementById('save-btn-text').textContent = 'Update Webhook';
     document.getElementById('webhookForm').dataset.index = index;
-    
+
     // Scroll to form
     setTimeout(() => {
       document.getElementById('webhook-form-section').scrollIntoView({ behavior: 'smooth' });
@@ -291,7 +291,7 @@ function clearForm() {
   document.getElementById('url').value = '';
   document.getElementById('name').value = '';
   document.getElementById('rateLimit').value = '';
-  
+
   // Reset form UI
   document.getElementById('form-title').innerHTML = '<i class="fa fa-plus"></i> Add New Webhook';
   document.getElementById('save-btn-text').textContent = 'Save Webhook';
@@ -300,13 +300,14 @@ function clearForm() {
 
 // Settings management
 function loadSettings() {
-  chrome.storage.local.get({ settings: { notificationInterval: 5 } }, function (data) {
+  chrome.storage.local.get({ settings: { notificationInterval: 5, enableNoteModal: true } }, function (data) {
     if (chrome.runtime.lastError) {
       console.error('Failed to load settings:', chrome.runtime.lastError);
       return;
     }
-    
+
     document.getElementById('notificationInterval').value = data.settings.notificationInterval;
+    document.getElementById('enableNoteModal').checked = data.settings.enableNoteModal;
   });
 }
 
@@ -324,29 +325,29 @@ function initializeFormToggle() {
   const addButton = document.getElementById('add-webhook-trigger');
   const formSection = document.getElementById('webhook-form-section');
   const closeButton = document.getElementById('form-close-btn');
-  
+
   function showForm() {
     addButton.style.display = 'none';
     formSection.style.display = 'block';
-    
+
     // Focus first input
     setTimeout(() => {
       document.getElementById('url').focus();
     }, 100);
   }
-  
+
   function hideForm() {
     addButton.style.display = 'flex';
     formSection.style.display = 'none';
     clearForm();
   }
-  
+
   // Add webhook button click
   addButton.addEventListener('click', showForm);
-  
+
   // Close button click
   closeButton.addEventListener('click', hideForm);
-  
+
   // Store references for other functions
   window.formToggleFunctions = {
     showForm,
@@ -361,7 +362,7 @@ function initializeFormToggle() {
 document.addEventListener('DOMContentLoaded', function() {
   initializeTabs();
   initializeFormToggle();
-  
+
   // Webhook form submission
   document.getElementById('webhookForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -396,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let webhooks = data.webhooks;
       const index = document.getElementById('webhookForm').dataset.index;
       const isEditing = index !== undefined;
-      
+
       if (isEditing) {
         // Update existing webhook
         webhooks[index] = { url, name, rateLimit: rateLimitValue };
@@ -404,19 +405,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add new webhook
         webhooks.push({ url, name, rateLimit: rateLimitValue });
       }
-      
+
       chrome.storage.local.set({ webhooks: webhooks }, function () {
         if (chrome.runtime.lastError) {
           console.error('Failed to save the webhook:', chrome.runtime.lastError);
           showError('Error saving webhook. Please try again.');
           return;
         }
-        
+
         console.log('Webhook saved!');
         const action = isEditing ? 'updated' : 'added';
         showSuccess(`Webhook "${name}" ${action} successfully!`);
         loadWebhooks();
-        
+
         // Hide form after successful save
         if (window.formToggleFunctions) {
           window.formToggleFunctions.hideForm();
@@ -431,25 +432,26 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('settingsForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const notificationInterval = parseInt(document.getElementById('notificationInterval').value);
-    
+    const enableNoteModal = document.getElementById('enableNoteModal').checked;
+
     if (isNaN(notificationInterval) || notificationInterval < 1 || notificationInterval > 60) {
       showError('Notification interval must be between 1 and 60 seconds.');
       return;
     }
-    
-    const settings = { notificationInterval };
-    
+
+    const settings = { notificationInterval, enableNoteModal };
+
     chrome.storage.local.set({ settings }, function () {
       if (chrome.runtime.lastError) {
         console.error('Failed to save settings:', chrome.runtime.lastError);
         showError('Error saving settings. Please try again.');
         return;
       }
-      
+
       showSuccess('Settings saved successfully!');
     });
   });
-  
+
   loadWebhooks();
   loadSettings();
 });

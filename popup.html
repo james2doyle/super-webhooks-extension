@@ -126,7 +126,7 @@
       flex: 1;
       overflow-y: auto;
     }
-    
+
     body {
       display: flex;
       flex-direction: column;
@@ -510,6 +510,15 @@
               <label for="notificationInterval">Update Interval (seconds)</label>
               <input type="number" id="notificationInterval" class="form-input" min="1" max="60" value="5">
               <small style="color: var(--text-secondary); font-size: 12px;">How often queue notifications update (1-60 seconds)</small>
+            </div>
+            <div class="form-group">
+              <label for="enableNoteModal">Enable Note Modal</label>
+              <div>
+                <label for="enableNoteModal" style="margin-left: 8px; font-weight: normal;">
+                  <input type="checkbox" id="enableNoteModal" class="form-input" style="width: auto;">
+                  <span>Show modal to add a note when sending to webhook</span>
+                </label>
+              </div>
             </div>
             <button type="submit" class="btn btn-primary">
               <i class="fa fa-save"></i> Save Settings

@@ -168,28 +168,50 @@ function updateWebhookMenus() {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId.startsWith("sendTo_")) {
-    chrome.storage.local.get('webhooks', function (data) {
+    chrome.storage.local.get(['webhooks', 'settings'], function (data) {
       // Extract index from menu ID (sendTo_sanitizedName_index_type)
       const parts = info.menuItemId.split('_');
       const indexPart = parts[parts.length - 2]; // Second to last part is the index
       const index = parseInt(indexPart);
       const webhook = data.webhooks[index];
       if (webhook) {
-        // Store data needed for sending the webhook later
-        const pendingWebhook = {
-          webhook: webhook,
-          info: info,
-          tabId: tab.id
-        };
-        chrome.storage.local.set({ pendingWebhook: pendingWebhook }, () => {
-          // Open the modal window
-          chrome.windows.create({
-            url: 'modal.html',
-            type: 'popup',
-            width: 500,
-            height: 400
+        // Check if note modal is enabled in settings
+        const enableNoteModal = data.settings?.enableNoteModal !== false; // Default to true if not set
+        
+        if (enableNoteModal) {
+          // Store data needed for sending the webhook later
+          const pendingWebhook = {
+            webhook: webhook,
+            info: info,
+            tabId: tab.id
+          };
+          chrome.storage.local.set({ pendingWebhook: pendingWebhook }, () => {
+            // Open the modal window
+            chrome.windows.create({
+              url: 'modal.html',
+              type: 'popup',
+              width: 500,
+              height: 400
+            });
           });
-        });
+        } else {
+          // Send webhook directly without showing modal
+          let urlToSend, type, selectionText = null;
+          
+          if (info.linkUrl) {
+            urlToSend = info.linkUrl;
+            type = 'link';
+          } else if (info.srcUrl) {
+            urlToSend = info.srcUrl;
+            type = 'image';
+          } else {
+            type = info.selectionText ? 'selection' : 'page';
+            urlToSend = info.pageUrl;
+            selectionText = info.selectionText;
+          }
+          
+          extractDataAndSend(webhook.url, urlToSend, type, tab.id, selectionText, '');
+        }
       }
     });
   }
