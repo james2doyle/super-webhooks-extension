@@ -247,7 +247,7 @@ function extractDataAndSend(webhookUrl, urlToSend, type, tabId, selectionText, a
       const links = document.querySelectorAll('a');
       for (let link of links) {
         if (link.href === arguments[0]) {
-          return link.title || null;
+          return link.title || link.getAttribute('aria-label') || link.innerText || null;
         }
       }
       return null;
