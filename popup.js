@@ -325,6 +325,7 @@ function testWebhook(index, buttonElement) {
       linkTitle: "Title if it was a link type",
       altText: "Image alt text if it was a link type",
       note: "Additional note content if there was some",
+      selectedText: "The selected text if there was a selection",
     };
 
     fetch(webhook.url, {

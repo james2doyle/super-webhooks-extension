@@ -131,7 +131,8 @@ The extension sends different payload structures depending on the context:
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": "Link title attribute",
   "altText": null,
-  "note": "Additional note content from the modal"
+  "note": "Additional note content from the modal",
+  "selectedText": "This is the selected text from the page"
 }
 ```
 
@@ -148,7 +149,8 @@ The extension sends different payload structures depending on the context:
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": null,
   "altText": "Image alt text",
-  "note": "Additional note content from the modal"
+  "note": "Additional note content from the modal",
+  "selectedText": "This is the selected text from the page"
 }
 ```
 
@@ -165,7 +167,8 @@ The extension sends different payload structures depending on the context:
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": "Title if it was a link type",
   "altText": "Image alt text if it was a link type",
-  "note": "Additional note content if there was some"
+  "note": "Additional note content if there was some",
+  "selectedText": "The selected text if there was a selection"
 }
 ```
 

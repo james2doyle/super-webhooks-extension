@@ -497,11 +497,8 @@ function extractDataAndSend(
           linkTitle: extractedData?.linkTitle || null,
           altText: extractedData?.altText || null,
           note: String(additionalContent).length > 0 ? additionalContent : null,
+          selectedText: selectionText,
         };
-
-        if (type === "selection") {
-          payload.selectedText = selectionText;
-        }
 
         // Find webhook to get rate limit
         chrome.storage.local.get("webhooks", (webhooksData) => {
