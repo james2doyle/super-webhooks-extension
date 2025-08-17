@@ -154,6 +154,24 @@ The extension sends different payload structures depending on the context:
 }
 ```
 
+### Video Context (right-click on a video)
+```json
+{
+  "url": "https://example.com/video.mp4",
+  "pageUrl": "https://example.com/article",
+  "timestamp": "2024-06-28T15:30:45.123Z",
+  "type": "video",
+  "title": "Article Title",
+  "description": "Article description from meta tag",
+  "keywords": "technology, programming, tutorial",
+  "favicon": "https://example.com/favicon.ico",
+  "linkTitle": null,
+  "altText": null,
+  "note": "Additional note content from the modal",
+  "selectedText": "This is the selected text from the page"
+}
+```
+
 ### Test Webhook Payload
 ```json
 {
