@@ -7,7 +7,7 @@ chrome.runtime.onInstalled.addListener(() => {
     {
       id: "sendToWebhook",
       title: "Send to Webhook",
-      contexts: ["page", "link", "image", "selection"],
+      contexts: ["page", "link", "image", "selection", "video"],
     },
     () => {
       if (chrome.runtime.lastError) {
@@ -174,7 +174,7 @@ function updateWebhookMenus() {
         {
           id: "sendToWebhook",
           title: "Send to Webhook",
-          contexts: ["page", "link", "image", "selection"],
+          contexts: ["page", "link", "image", "selection", "video"],
         },
         () => {
           // Check for errors
@@ -196,7 +196,7 @@ function updateWebhookMenus() {
                   id: `sendTo_${sanitizedId}_${index}_normal`,
                   parentId: "sendToWebhook",
                   title: webhook.name,
-                  contexts: ["page", "link", "image"],
+                  contexts: ["page", "link", "image", "video"],
                 });
 
                 // Create separate menu item for selection context
@@ -254,7 +254,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             type = "link";
           } else if (info.srcUrl) {
             urlToSend = info.srcUrl;
-            type = "image";
+            type = info.mediaType === "video" ? "video" : "image";
           } else {
             type = info.selectionText ? "selection" : "page";
             urlToSend = info.pageUrl;
@@ -299,7 +299,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
           extractDataAndSend(
             webhook.url,
             info.srcUrl,
-            "image",
+            info.mediaType === "video" ? "video" : "image",
             tabId,
             null,
             additionalContent,
@@ -335,12 +335,12 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
 /**
  * Extracts relevant data from the current tab based on the context type
- * (page, link, image, selection) and then sends it to the specified webhook.
+ * (page, link, image, video, selection) and then sends it to the specified webhook.
  * It uses `chrome.scripting.executeScript` to get page-specific details.
  *
  * @param {string} webhookUrl - The URL of the webhook to send data to.
  * @param {string} urlToSend - The URL related to the context (e.g., page URL, link URL, image URL).
- * @param {'page'|'link'|'image'|'selection'} type - The context type of the data.
+ * @param {'page'|'link'|'image'|'video'|'selection'} type - The context type of the data.
  * @param {number} tabId - The ID of the tab where the action originated.
  * @param {string|null} selectionText - The selected text, if the context is 'selection'.
  * @param {string} additionalContent - Any additional user-provided content (e.g., a note from the modal).
@@ -407,12 +407,39 @@ function extractDataAndSend(
   } else if (type === "image") {
     codeToExecute = (...rest) => {
       let altText = null;
-      const images = document.querySelectorAll("img");
+      const media = document.querySelectorAll("img");
 
-      console.error({ images });
-      for (const img of images) {
-        if (img.src === rest[0]) {
-          altText = img.alt || img.title || null;
+      for (const item of media) {
+        if (item.src === rest[0]) {
+          altText = item.alt || item.title || null;
+        }
+      }
+
+      return {
+        title: document.title,
+        description:
+          document
+            .querySelector('meta[name="description"]')
+            ?.getAttribute("content") || null,
+        keywords:
+          document
+            .querySelector('meta[name="keywords"]')
+            ?.getAttribute("content") || null,
+        favicon:
+          document.querySelector('link[rel="icon"]')?.href ||
+          document.querySelector('link[rel="shortcut icon"]')?.href ||
+          null,
+        altText,
+      };
+    };
+  } else if (type === "video") {
+    codeToExecute = (...rest) => {
+      let altText = null;
+      const media = document.querySelectorAll("video");
+
+      for (const item of media) {
+        if (item.src === rest[0]) {
+          altText = item.alt || item.title || null;
         }
       }
 
