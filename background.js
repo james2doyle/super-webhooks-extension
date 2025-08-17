@@ -320,11 +320,11 @@ function extractDataAndSend(
 				null,
 		});
 	} else if (type === "link") {
-		codeToExecute = () => {
+		codeToExecute = (...rest) => {
 			let linkTitle = null;
 			const links = document.querySelectorAll("a");
 			for (const link of links) {
-				if (link.href === arguments[0]) {
+				if (link.href === rest[0]) {
 					linkTitle =
 						link.title ||
 						link.getAttribute("aria-label") ||
@@ -351,12 +351,14 @@ function extractDataAndSend(
 			};
 		};
 	} else if (type === "image") {
-		codeToExecute = () => {
+		codeToExecute = (...rest) => {
 			let altText = null;
 			const images = document.querySelectorAll("img");
+
+			console.error({ images });
 			for (const img of images) {
-				if (img.src === arguments[0]) {
-					altText = img.alt || null;
+				if (img.src === rest[0]) {
+					altText = img.alt || img.title || null;
 				}
 			}
 
@@ -405,17 +407,15 @@ function extractDataAndSend(
 				const payload = {
 					url: urlToSend,
 					timestamp: new Date().toISOString(),
-					type: type,
+					type,
+					title: extractedData?.title || null,
+					description: extractedData?.description || null,
+					keywords: extractedData?.keywords || null,
+					favicon: extractedData?.favicon || null,
+					linkTitle: extractedData?.linkTitle || null,
+					altText: extractedData?.altText || null,
+					note: String(additionalContent).length > 0 ? additionalContent : null,
 				};
-
-				payload.title = extractedData?.title || null;
-				payload.description = extractedData?.description || null;
-				payload.keywords = extractedData?.keywords || null;
-				payload.favicon = extractedData?.favicon || null;
-				payload.note =
-					String(additionalContent).length > 0 ? additionalContent : null;
-				payload.linkTitle = extractedData?.linkTitle || null;
-				payload.altText = extractedData?.altText || null;
 
 				if (type === "selection") {
 					payload.selectedText = selectionText;
