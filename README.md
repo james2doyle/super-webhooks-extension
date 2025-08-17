@@ -87,12 +87,15 @@ The extension sends different payload structures depending on the context:
 ```json
 {
   "url": "https://example.com/article",
+  "pageUrl": "https://example.com/article",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "page",
   "title": "Article Title",
   "description": "Article description from meta tag",
   "keywords": "technology, programming, tutorial",
   "favicon": "https://example.com/favicon.ico",
+  "linkTitle": null,
+  "altText": null,
   "note": "Additional note content from the modal"
 }
 ```
@@ -101,12 +104,15 @@ The extension sends different payload structures depending on the context:
 ```json
 {
   "url": "https://example.com/article",
+  "pageUrl": "https://example.com/article",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "selection",
   "title": "Article Title",
   "description": "Article description from meta tag",
   "keywords": "technology, programming, tutorial",
   "favicon": "https://example.com/favicon.ico",
+  "linkTitle": null,
+  "altText": null,
   "note": "Additional note content from the modal",
   "selectedText": "This is the selected text from the page"
 }
@@ -116,14 +122,16 @@ The extension sends different payload structures depending on the context:
 ```json
 {
   "url": "https://linked-page.com",
+  "pageUrl": "https://example.com/article",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "link",
   "title": "Article Title",
   "description": "Article description from meta tag",
   "keywords": "technology, programming, tutorial",
   "favicon": "https://example.com/favicon.ico",
-  "note": "Additional note content from the modal",
-  "linkTitle": "Link title attribute"
+  "linkTitle": "Link title attribute",
+  "altText": null,
+  "note": "Additional note content from the modal"
 }
 ```
 
@@ -131,24 +139,33 @@ The extension sends different payload structures depending on the context:
 ```json
 {
   "url": "https://example.com/image.jpg",
+  "pageUrl": "https://example.com/article",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "image",
   "title": "Article Title",
   "description": "Article description from meta tag",
   "keywords": "technology, programming, tutorial",
   "favicon": "https://example.com/favicon.ico",
-  "note": "Additional note content from the modal",
-  "altText": "Image alt text"
+  "linkTitle": null,
+  "altText": "Image alt text",
+  "note": "Additional note content from the modal"
 }
 ```
 
 ### Test Webhook Payload
 ```json
 {
-  "url": "https://example.com/test",
-  "title": "Test webhook from Chrome Extension",
+  "url:" "https://example.com/image.jpg",
+  "pageUrl": "https://example.com/article",
   "timestamp": "2024-06-28T15:30:45.123Z",
-  "type": "test"
+  "type": "test",
+  "title": "Testing",
+  "description": "Testing description from meta tag",
+  "keywords": "technology, programming, tutorial",
+  "favicon": "https://example.com/favicon.ico",
+  "linkTitle": "Title if it was a link type",
+  "altText": "Image alt text if it was a link type",
+  "note": "Additional note content if there was some"
 }
 ```
 

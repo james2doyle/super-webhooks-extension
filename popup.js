@@ -314,10 +314,17 @@ function testWebhook(index, buttonElement) {
 
     const startTime = Date.now();
     const testPayload = {
-      url: "https://example.com/test",
-      title: "Test webhook from Chrome Extension",
+      url: "https://example.com/image.jpg",
+      pageUrl: "https://example.com/article",
       timestamp: new Date().toISOString(),
       type: "test",
+      title: "Testing",
+      description: "Testing description from meta tag",
+      keywords: "technology, programming, tutorial",
+      favicon: "https://example.com/favicon.ico",
+      linkTitle: "Title if it was a link type",
+      altText: "Image alt text if it was a link type",
+      note: "Additional note content if there was some",
     };
 
     fetch(webhook.url, {
