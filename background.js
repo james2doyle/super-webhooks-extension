@@ -268,6 +268,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             tab.id,
             selectionText,
             "",
+            info.pageUrl,
           );
         }
       }
@@ -292,6 +293,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             tabId,
             null,
             additionalContent,
+            info.pageUrl,
           );
         } else if (info.srcUrl) {
           extractDataAndSend(
@@ -301,6 +303,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             tabId,
             null,
             additionalContent,
+            info.pageUrl,
           );
         } else {
           const type = info.selectionText ? "selection" : "page";
@@ -311,6 +314,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             tabId,
             info.selectionText,
             additionalContent,
+            info.pageUrl,
           );
         }
 
@@ -340,6 +344,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
  * @param {number} tabId - The ID of the tab where the action originated.
  * @param {string|null} selectionText - The selected text, if the context is 'selection'.
  * @param {string} additionalContent - Any additional user-provided content (e.g., a note from the modal).
+ * @param {string} pageUrl - The URL of the page where the context menu was clicked.
  */
 function extractDataAndSend(
   webhookUrl,
@@ -348,6 +353,7 @@ function extractDataAndSend(
   tabId,
   selectionText,
   additionalContent,
+  pageUrl,
 ) {
   let codeToExecute;
 
@@ -454,8 +460,9 @@ function extractDataAndSend(
         // Build enhanced payload
         const payload = {
           url: urlToSend,
-          timestamp: new Date().toISOString(),
+          pageUrl,
           type,
+          timestamp: new Date().toISOString(),
           title: extractedData?.title || null,
           description: extractedData?.description || null,
           keywords: extractedData?.keywords || null,
