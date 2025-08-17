@@ -1,3 +1,8 @@
+/**
+ * Validates if a given URL is a valid HTTP or HTTPS URL.
+ * @param {string} url - The URL string to validate.
+ * @returns {boolean} True if the URL is valid (http/https), false otherwise.
+ */
 function validateURL(url) {
   try {
     const urlObj = new URL(url);
@@ -8,6 +13,12 @@ function validateURL(url) {
   }
 }
 
+/**
+ * Displays a temporary message to the user in a designated container.
+ * The message will automatically hide after a short delay.
+ * @param {string} message - The message text to display.
+ * @param {"error"|"success"} [type="error"] - The type of message, which influences its styling.
+ */
 function showMessage(message, type = "error") {
   const container = document.getElementById("message-container");
   const messageDiv = document.createElement("div");
@@ -24,15 +35,29 @@ function showMessage(message, type = "error") {
   }, 5000);
 }
 
+/**
+ * Displays an error message to the user.
+ * This is a convenience function that calls `showMessage` with the type set to "error".
+ * @param {string} message - The error message text to display.
+ */
 function showError(message) {
   showMessage(message, "error");
 }
 
+/**
+ * Displays a success message to the user.
+ * This is a convenience function that calls `showMessage` with the type set to "success".
+ * @param {string} message - The success message text to display.
+ */
 function showSuccess(message) {
   showMessage(message, "success");
 }
 
-// Tab functionality
+/**
+ * Switches the active tab in the user interface.
+ * Updates the active state of tab buttons and displays the corresponding tab content.
+ * @param {string} tabName - The name of the tab to switch to (corresponds to `data-tab` attribute and element ID).
+ */
 function switchTab(tabName) {
   // Update tab buttons
   document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -49,6 +74,13 @@ function switchTab(tabName) {
   document.getElementById(`${tabName}-tab`).classList.add("active");
 }
 
+/**
+ * Creates and returns a DOM element representing a webhook card for display in the list.
+ * Includes webhook details, meta badges, and action buttons (test, edit, delete).
+ * @param {object} hook - The webhook object containing properties like `name`, `url`, `rateLimit`, `enableNoteModal`.
+ * @param {number} index - The index of the webhook in the array, used for actions like editing and deleting.
+ * @returns {HTMLElement} The created webhook card DOM element.
+ */
 function createWebhookCard(hook, index) {
   const card = document.createElement("div");
   card.className = "webhook-card";
@@ -125,6 +157,10 @@ function createWebhookCard(hook, index) {
   return card;
 }
 
+/**
+ * Loads webhooks from Chrome local storage and renders them in the UI.
+ * Displays an empty state message if no webhooks are found.
+ */
 function loadWebhooks() {
   chrome.storage.local.get("webhooks", (data) => {
     if (chrome.runtime.lastError) {
@@ -149,6 +185,13 @@ function loadWebhooks() {
   });
 }
 
+/**
+ * Handles the click event for a delete button, implementing a confirmation step.
+ * On first click, it changes the button text to "Confirm?". On second click, it performs the deletion.
+ * If the user clicks outside the button after the first click, the button reverts to its original state.
+ * @param {HTMLElement} button - The delete button element that was clicked.
+ * @param {number} index - The index of the webhook to be deleted.
+ */
 function handleDeleteClick(button, index) {
   if (button.classList.contains("confirm-delete")) {
     // If button already clicked once, perform the deletion
@@ -175,6 +218,11 @@ function handleDeleteClick(button, index) {
   }
 }
 
+/**
+ * Populates the webhook form with the details of an existing webhook for editing.
+ * Switches to the webhooks tab, shows the form, and updates its UI for an edit operation.
+ * @param {number} index - The index of the webhook to be edited.
+ */
 function editWebhook(index) {
   chrome.storage.local.get("webhooks", (data) => {
     const webhooks = data.webhooks;
@@ -210,6 +258,11 @@ function editWebhook(index) {
   });
 }
 
+/**
+ * Deletes a webhook from Chrome local storage at the specified index.
+ * After deletion, it refreshes the list of webhooks in the UI and shows a success message.
+ * @param {number} index - The index of the webhook to be deleted.
+ */
 function deleteWebhook(index) {
   chrome.storage.local.get("webhooks", (data) => {
     if (chrome.runtime.lastError) {
@@ -234,6 +287,12 @@ function deleteWebhook(index) {
   });
 }
 
+/**
+ * Sends a test payload to a specified webhook URL.
+ * Updates the provided button element to show testing status and then success/failure.
+ * @param {number} index - The index of the webhook to test.
+ * @param {HTMLElement} buttonElement - The button element that triggered the test, used for UI feedback.
+ */
 function testWebhook(index, buttonElement) {
   chrome.storage.local.get("webhooks", (data) => {
     if (chrome.runtime.lastError) {
@@ -310,6 +369,10 @@ function testWebhook(index, buttonElement) {
   });
 }
 
+/**
+ * Clears all input fields in the webhook form and resets its UI state
+ * to that of adding a new webhook.
+ */
 function clearForm() {
   document.getElementById("url").value = "";
   document.getElementById("name").value = "";
@@ -323,7 +386,10 @@ function clearForm() {
   delete document.getElementById("webhookForm").dataset.index;
 }
 
-// Settings management
+/**
+ * Loads extension settings from Chrome local storage and populates the settings form fields.
+ * If no settings are found, default values are used.
+ */
 function loadSettings() {
   chrome.storage.local.get(
     { settings: { notificationInterval: 5 } },
@@ -339,7 +405,9 @@ function loadSettings() {
   );
 }
 
-// Initialize tabs
+/**
+ * Initializes event listeners for all tab buttons, allowing them to switch tabs when clicked.
+ */
 function initializeTabs() {
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -348,12 +416,20 @@ function initializeTabs() {
   });
 }
 
-// Simple form show/hide functionality
+/**
+ * Initializes the functionality for showing and hiding the webhook form.
+ * It sets up event listeners for the "Add Webhook" button and the form's close button.
+ * It also exposes `showForm` and `hideForm` functions globally via `window.formToggleFunctions`.
+ */
 function initializeFormToggle() {
   const addButton = document.getElementById("add-webhook-trigger");
   const formSection = document.getElementById("webhook-form-section");
   const closeButton = document.getElementById("form-close-btn");
 
+  /**
+   * Shows the webhook form and hides the "Add Webhook" button.
+   * Also focuses on the first input field in the form.
+   */
   function showForm() {
     addButton.style.display = "none";
     formSection.style.display = "block";
@@ -364,6 +440,10 @@ function initializeFormToggle() {
     }, 100);
   }
 
+  /**
+   * Hides the webhook form and shows the "Add Webhook" button.
+   * Also clears the form fields.
+   */
   function hideForm() {
     addButton.style.display = "flex";
     formSection.style.display = "none";
@@ -386,12 +466,20 @@ function initializeFormToggle() {
 
 // No longer needed - using close button instead
 
-// Form submission handlers
+/**
+ * Event listener for when the DOM content is fully loaded.
+ * Initializes tabs, form toggle functionality, and sets up submission handlers
+ * for the webhook and settings forms. Also loads initial webhooks and settings.
+ */
 document.addEventListener("DOMContentLoaded", () => {
   initializeTabs();
   initializeFormToggle();
 
-  // Webhook form submission
+  /**
+   * Handles the submission of the webhook form.
+   * Validates input, saves new or updates existing webhooks to Chrome local storage,
+   * and refreshes the webhook list.
+   */
   document.getElementById("webhookForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const url = document.getElementById("url").value.trim();
@@ -472,7 +560,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Settings form submission
+  /**
+   * Handles the submission of the settings form.
+   * Validates the notification interval and saves settings to Chrome local storage.
+   */
   document.getElementById("settingsForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const notificationInterval = parseInt(

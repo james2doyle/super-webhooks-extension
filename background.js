@@ -26,6 +26,11 @@ chrome.runtime.onStartup.addListener(() => {
   initializeQueues();
 });
 
+/**
+ * Initializes webhook queues from local storage.
+ * It retrieves stored webhooks and sets up their initial queue data
+ * including an empty queue, last sent timestamp, timer, and rate limit.
+ */
 function initializeQueues() {
   chrome.storage.local.get("webhooks", (data) => {
     if (data.webhooks) {
@@ -47,6 +52,17 @@ function initializeQueues() {
   });
 }
 
+/**
+ * Adds a payload to a specific webhook's queue.
+ * If the webhook's queue doesn't exist, it initializes it.
+ * It also checks if the item will be queued due to rate limiting and
+ * displays a notification if so, then attempts to process the queue.
+ *
+ * @param {string} webhookUrl - The URL of the webhook.
+ * @param {object} payload - The data payload to send to the webhook.
+ * @param {string} webhookName - The name of the webhook for display purposes.
+ * @param {number} [rateLimit=0] - The rate limit in seconds for this webhook (0 for no limit).
+ */
 function addToQueue(webhookUrl, payload, webhookName, rateLimit = 0) {
   if (!webhookQueues.has(webhookUrl)) {
     webhookQueues.set(webhookUrl, {
@@ -76,6 +92,14 @@ function addToQueue(webhookUrl, payload, webhookName, rateLimit = 0) {
   processQueue(webhookUrl);
 }
 
+/**
+ * Processes the queue for a given webhook URL.
+ * It sends the next item in the queue, respecting the rate limit.
+ * If a rate limit is active and the last send was too recent, it schedules
+ * a retry using a timer.
+ *
+ * @param {string} webhookUrl - The URL of the webhook whose queue needs processing.
+ */
 function processQueue(webhookUrl) {
   const queueData = webhookQueues.get(webhookUrl);
   if (!queueData || queueData.queue.length === 0) return;
@@ -121,11 +145,24 @@ function processQueue(webhookUrl) {
   }
 }
 
+/**
+ * Sanitizes a string to be used as a Chrome context menu ID.
+ * Replaces non-alphanumeric characters with underscores and truncates to 50 characters.
+ *
+ * @param {string} name - The original string to sanitize.
+ * @returns {string} The sanitized string suitable for a menu ID.
+ */
 function sanitizeMenuId(name) {
   return name.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 50);
 }
 
 let updateWebhookMenusTimeout;
+/**
+ * Updates the Chrome context menus with the currently configured webhooks.
+ * This function debounces multiple calls to avoid excessive menu rebuilds.
+ * It first removes all existing custom menu items, then recreates the parent
+ * "Send to Webhook" menu, and finally adds child menu items for each stored webhook.
+ */
 function updateWebhookMenus() {
   // Debounce to avoid excessive rebuilds
   clearTimeout(updateWebhookMenusTimeout);
@@ -267,10 +304,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
           );
         } else {
           const type = info.selectionText ? "selection" : "page";
-          const urlToSend = info.pageUrl;
           extractDataAndSend(
             webhook.url,
-            urlToSend,
+            info.pageUrl,
             type,
             tabId,
             info.selectionText,
@@ -293,6 +329,18 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   return true; // Crucial for async sendResponse
 });
 
+/**
+ * Extracts relevant data from the current tab based on the context type
+ * (page, link, image, selection) and then sends it to the specified webhook.
+ * It uses `chrome.scripting.executeScript` to get page-specific details.
+ *
+ * @param {string} webhookUrl - The URL of the webhook to send data to.
+ * @param {string} urlToSend - The URL related to the context (e.g., page URL, link URL, image URL).
+ * @param {'page'|'link'|'image'|'selection'} type - The context type of the data.
+ * @param {number} tabId - The ID of the tab where the action originated.
+ * @param {string|null} selectionText - The selected text, if the context is 'selection'.
+ * @param {string} additionalContent - Any additional user-provided content (e.g., a note from the modal).
+ */
 function extractDataAndSend(
   webhookUrl,
   urlToSend,
@@ -435,8 +483,15 @@ function extractDataAndSend(
   );
 }
 
+/**
+ * Displays a basic Chrome notification.
+ *
+ * @param {string} title - The title of the notification.
+ * @param {string} message - The main message content of the notification.
+ * @param {boolean} [isSuccess=true] - Whether the notification indicates success (influences icon, if different).
+ */
 function showNotification(title, message, isSuccess = true) {
-  const iconPath = isSuccess ? "images/icon48.png" : "images/icon48.png";
+  const iconPath = isSuccess ? "images/icon48.png" : "images/icon48.png"; // Currently same icon for success/failure
   chrome.notifications.create({
     type: "basic",
     iconUrl: iconPath,
@@ -445,6 +500,14 @@ function showNotification(title, message, isSuccess = true) {
   });
 }
 
+/**
+ * Displays and updates a dynamic Chrome notification for a webhook queue.
+ * This notification shows the number of items in the queue and estimated time remaining.
+ * It updates at a configurable interval and auto-clears after 60 seconds.
+ *
+ * @param {string} webhookUrl - The URL of the webhook associated with the queue.
+ * @param {string} webhookName - The name of the webhook for display in the notification.
+ */
 function showQueueNotification(webhookUrl, webhookName) {
   const notificationId = `queue_${webhookUrl}_${Date.now()}`;
 
@@ -495,6 +558,11 @@ function showQueueNotification(webhookUrl, webhookName) {
   );
 }
 
+/**
+ * Clears a specific queue notification and its associated update interval.
+ *
+ * @param {string} webhookUrl - The URL of the webhook whose queue notification should be cleared.
+ */
 function clearQueueNotification(webhookUrl) {
   const notification = queueNotifications.get(webhookUrl);
   if (notification) {
@@ -504,6 +572,16 @@ function clearQueueNotification(webhookUrl) {
   }
 }
 
+/**
+ * Sends a POST request to a webhook URL with a JSON payload.
+ * Includes retry logic for failed requests.
+ * Displays success or failure notifications upon completion.
+ *
+ * @param {string} webhookUrl - The URL of the webhook.
+ * @param {object} payload - The JSON payload to send.
+ * @param {number} [retryCount=3] - The number of retries remaining.
+ * @param {string} [webhookName="Webhook"] - The name of the webhook for notifications.
+ */
 function postToWebhookDirect(
   webhookUrl,
   payload,
