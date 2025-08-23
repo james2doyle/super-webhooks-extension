@@ -326,6 +326,10 @@ function testWebhook(index, buttonElement) {
       altText: "Image alt text if it was a link type",
       note: "Additional note content if there was some",
       selectedText: "The selected text if there was a selection",
+      browser: "Chrome/139.0.0.0",
+      operatingSystem: "mac",
+      deviceType: "Desktop",
+      screenResolution: "1920x1080",
     };
 
     fetch(webhook.url, {

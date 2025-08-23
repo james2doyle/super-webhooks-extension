@@ -38,6 +38,7 @@ This project isn't merely a functional tool; it's a personal statement and a bea
 - **Webhook Testing**: Test webhooks directly from the popup with response time and status feedback
 - **Smart Notifications**: Desktop notifications with emoji feedback (✅/❌/⏳) for webhook status and queue updates
 - **Add Notes to Webhooks**: Attach optional free-form text notes to any webhook payload via a dedicated modal window.
+- **Device Details**: Includes browser, operating system, device type, and screen resolution
 
 ### Advanced Features
 - **Rate Limiting**: Configure per-webhook rate limits to prevent API abuse
@@ -81,7 +82,7 @@ Right-click on any webpage element:
 
 ## Webhook Payload Examples
 
-The extension sends different payload structures depending on the context:
+The extension sends different payload structures depending on the context.
 
 ### Page Context (right-click on page)
 ```json
@@ -96,7 +97,11 @@ The extension sends different payload structures depending on the context:
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": null,
   "altText": null,
-  "note": "Additional note content from the modal"
+  "note": "Additional note content from the modal",
+  "browser": "Chrome/139.0.0.0",
+  "operatingSystem": "mac",
+  "deviceType": "Desktop",
+  "screenResolution": "1920x1080"
 }
 ```
 
@@ -114,7 +119,11 @@ The extension sends different payload structures depending on the context:
   "linkTitle": null,
   "altText": null,
   "note": "Additional note content from the modal",
-  "selectedText": "This is the selected text from the page"
+  "selectedText": "This is the selected text from the page",
+  "browser": "Chrome/139.0.0.0",
+  "operatingSystem": "mac",
+  "deviceType": "Desktop",
+  "screenResolution": "1920x1080"
 }
 ```
 
@@ -132,7 +141,11 @@ The extension sends different payload structures depending on the context:
   "linkTitle": "Link title attribute",
   "altText": null,
   "note": "Additional note content from the modal",
-  "selectedText": "This is the selected text from the page"
+  "selectedText": "This is the selected text from the page",
+  "browser": "Chrome/139.0.0.0",
+  "operatingSystem": "mac",
+  "deviceType": "Desktop",
+  "screenResolution": "1920x1080"
 }
 ```
 
@@ -150,7 +163,11 @@ The extension sends different payload structures depending on the context:
   "linkTitle": null,
   "altText": "Image alt text",
   "note": "Additional note content from the modal",
-  "selectedText": "This is the selected text from the page"
+  "selectedText": "This is the selected text from the page",
+  "browser": "Chrome/139.0.0.0",
+  "operatingSystem": "android",
+  "deviceType": "Tablet",
+  "screenResolution": "1920x1080"
 }
 ```
 
@@ -168,7 +185,11 @@ The extension sends different payload structures depending on the context:
   "linkTitle": null,
   "altText": null,
   "note": "Additional note content from the modal",
-  "selectedText": "This is the selected text from the page"
+  "selectedText": "This is the selected text from the page",
+  "browser": "Chrome/139.0.0.0",
+  "operatingSystem": "android",
+  "deviceType": "Mobile",
+  "screenResolution": "1920x1080"
 }
 ```
 
@@ -186,7 +207,11 @@ The extension sends different payload structures depending on the context:
   "linkTitle": "Title if it was a link type",
   "altText": "Image alt text if it was a link type",
   "note": "Additional note content if there was some",
-  "selectedText": "The selected text if there was a selection"
+  "selectedText": "The selected text if there was a selection",
+  "browser": "Chrome/139.0.0.0",
+  "operatingSystem": "win",
+  "deviceType": "Desktop",
+  "screenResolution": "1920x1080"
 }
 ```
 

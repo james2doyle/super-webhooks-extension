@@ -357,6 +357,12 @@ function extractDataAndSend(
 ) {
   let codeToExecute;
 
+  // Function to get screen resolution, executed in content script
+  const getScreenResolution = () => ({
+    screenWidth: window.screen.width,
+    screenHeight: window.screen.height,
+  });
+
   if (type === "page" || type === "selection") {
     codeToExecute = () => ({
       title: document.title,
@@ -462,22 +468,48 @@ function extractDataAndSend(
     };
   }
 
-  chrome.scripting.executeScript(
-    {
+  // Execute both scripts: one for page data and one for screen resolution
+  Promise.all([
+    chrome.scripting.executeScript({
       target: { tabId: tabId },
       func: codeToExecute,
       args: [urlToSend],
-    },
-    (injectionResults) => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Script injection failed:",
-          chrome.runtime.lastError.message,
-        );
-      }
-      const extractedData = injectionResults?.[0]
-        ? injectionResults[0].result
-        : null;
+    }),
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      func: getScreenResolution,
+    }),
+  ]).then(([injectionResults, resolutionResults]) => {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "Script injection failed:",
+        chrome.runtime.lastError.message,
+      );
+    }
+    const extractedData = injectionResults?.[0]
+      ? injectionResults[0].result
+      : null;
+    const screenResolution = resolutionResults?.[0]
+      ? resolutionResults[0].result
+      : { screenWidth: null, screenHeight: null };
+
+    // Get browser, OS, and device type using chrome.runtime and navigator.userAgent
+    chrome.runtime.getPlatformInfo((platformInfo) => {
+      const browserInfo = navigator.userAgent;
+      const os = platformInfo.os || "Unknown OS";
+      const browserVersion = browserInfo.match(/(Chrome)\/([0-9.]+)/)
+        ? `${browserInfo.match(/(Chrome)\/([0-9.]+)/)[0]}`
+        : browserInfo; // Fallback to full user agent if Chrome version not found
+
+      // Simple device type detection (can be more robust if needed)
+      const deviceType =
+        navigator.userAgent.match(/Mobi/) ||
+        navigator.userAgent.match(/Android/i) ||
+        navigator.userAgent.match(/iPhone|iPad|iPod/i)
+          ? "Mobile"
+          : screenResolution.screenWidth && screenResolution.screenWidth <= 768
+            ? "Tablet"
+            : "Desktop";
 
       // Find webhook name for notification
       chrome.storage.local.get("webhooks", (data) => {
@@ -498,6 +530,12 @@ function extractDataAndSend(
           altText: extractedData?.altText || null,
           note: String(additionalContent).length > 0 ? additionalContent : null,
           selectedText: selectionText,
+          browser: browserVersion,
+          operatingSystem: os,
+          deviceType: deviceType,
+          screenResolution: screenResolution.screenWidth
+            ? `${screenResolution.screenWidth}x${screenResolution.screenHeight}`
+            : null,
         };
 
         // Find webhook to get rate limit
@@ -510,8 +548,8 @@ function extractDataAndSend(
           addToQueue(webhookUrl, payload, webhookName, rateLimit);
         });
       });
-    },
-  );
+    });
+  });
 }
 
 /**
