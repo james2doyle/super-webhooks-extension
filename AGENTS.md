@@ -151,3 +151,30 @@ Webhooks are stored in Chrome local storage as:
 - All major architectural pieces are in place for future features
 - Storage system can be extended for additional webhook metadata
 - Context menu system supports expansion to more content types
+
+## Project Structure
+
+The project follows a standard Chrome extension structure with these key files:
+
+- **manifest.json**: Extension manifest defining permissions, background scripts, and UI components
+- **background.js**: Service worker handling context menu creation, webhook management, and HTTP requests
+- **popup.html/popup.js**: Extension popup UI for webhook registration and management
+- **modal.html/modal.js**: Modal window for adding notes to webhook payloads
+- **images/**: Icon assets for the extension
+- **AGENTS.md**: Development guide and project documentation
+- **README.md**: User documentation and feature overview
+- **CHANGELOG.md**: Version history and release notes
+- **biome.json**: Code formatting and linting configuration
+- **.gitignore**: Git ignore configuration
+
+## Key Directories
+
+- **images/**: Contains icon assets (16px, 48px, 128px)
+- **.github/**: GitHub configuration including issue templates
+- **.crush/**: Database files for the Crush system (ignored by git)
+
+## Development Tools
+
+- **Biome**: Used for code formatting and linting (configured in biome.json)
+- **Sublime Text**: Project files included for editor configuration
+- **Git**: Version control with standard .gitignore configuration
