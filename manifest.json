@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "Super Webhooks",
   "description": "A Chrome extension that allows you to send data to webhooks.",
-  "version": "1.0",
+  "version": "1.0.0",
+  "minimum_chrome_version": "88",
   "permissions": [
     "storage",
     "contextMenus",
@@ -12,6 +13,7 @@
   ],
   "host_permissions": ["*://*/*"],
   "action": {
+    "default_title": "Super Webhooks",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "images/icon16.png",
