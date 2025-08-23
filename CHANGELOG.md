@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 🔨 Technical Improvements
 #### Added
 - **Enhanced webhook testing** with improved payload structure including `type` field
+- **Browser window size information** in webhook payloads alongside screen resolution
 - **Better error handling** throughout the application with proper user feedback
 - **Modular JavaScript architecture** with separated concerns for UI and queue management
 - **CSS custom properties system** for maintainable theming

@@ -34,11 +34,11 @@ This project isn't merely a functional tool; it's a personal statement and a bea
 ### Core Functionality
 - **Register and Manage Webhooks**: Add, edit, and delete webhooks with friendly names, URLs, and rate limits
 - **Context Menu Integration**: Right-click on any page, link, image, or selected text to send data to registered webhooks. This now includes an optional modal for adding notes.
-- **Enhanced Data Collection**: Automatically extracts page metadata, timestamps, and context-specific information
+- **Enhanced Data Collection**: Automatically extracts page metadata, timestamps, and context-specific information including device details (browser window size and screen resolution)
 - **Webhook Testing**: Test webhooks directly from the popup with response time and status feedback
 - **Smart Notifications**: Desktop notifications with emoji feedback (✅/❌/⏳) for webhook status and queue updates
 - **Add Notes to Webhooks**: Attach optional free-form text notes to any webhook payload via a dedicated modal window.
-- **Device Details**: Includes browser, operating system, device type, and screen resolution
+- **Device Details**: Includes browser, operating system, device type, screen resolution, and browser window size
 
 ### Advanced Features
 - **Rate Limiting**: Configure per-webhook rate limits to prevent API abuse
@@ -101,7 +101,8 @@ The extension sends different payload structures depending on the context.
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "mac",
   "deviceType": "Desktop",
-  "screenResolution": "1920x1080"
+  "screenResolution": "1920x1080",
+  "windowSize": "1200x800"
 }
 ```
 
@@ -123,7 +124,8 @@ The extension sends different payload structures depending on the context.
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "mac",
   "deviceType": "Desktop",
-  "screenResolution": "1920x1080"
+  "screenResolution": "1920x1080",
+  "windowSize": "1200x800"
 }
 ```
 
@@ -145,7 +147,8 @@ The extension sends different payload structures depending on the context.
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "mac",
   "deviceType": "Desktop",
-  "screenResolution": "1920x1080"
+  "screenResolution": "1920x1080",
+  "windowSize": "1200x800"
 }
 ```
 
@@ -167,7 +170,8 @@ The extension sends different payload structures depending on the context.
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "android",
   "deviceType": "Tablet",
-  "screenResolution": "1920x1080"
+  "screenResolution": "1920x1080",
+  "windowSize": "1200x800"
 }
 ```
 
@@ -189,14 +193,15 @@ The extension sends different payload structures depending on the context.
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "android",
   "deviceType": "Mobile",
-  "screenResolution": "1920x1080"
+  "screenResolution": "1920x1080",
+  "windowSize": "1200x800"
 }
 ```
 
 ### Test Webhook Payload
 ```json
 {
-  "url:" "https://example.com/image.jpg",
+  "url": "https://example.com/image.jpg",
   "pageUrl": "https://example.com/article",
   "timestamp": "2024-06-28T15:30:45.123Z",
   "type": "test",
@@ -211,7 +216,8 @@ The extension sends different payload structures depending on the context.
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "win",
   "deviceType": "Desktop",
-  "screenResolution": "1920x1080"
+  "screenResolution": "1920x1080",
+  "windowSize": "1200x800"
 }
 ```
 
@@ -292,6 +298,7 @@ Contributions are welcome! Please:
 - **IMPROVED**: Button states and visual feedback
 - **IMPROVED**: Typography and spacing consistency
 - **IMPROVED**: Test webhook functionality with enhanced payloads
+- **IMPROVED**: Device information now includes browser window size in addition to screen resolution
 
 ### v1.0.0 (2024-06-26)
 - Initial release with basic webhook management

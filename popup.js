@@ -330,6 +330,7 @@ function testWebhook(index, buttonElement) {
       operatingSystem: "mac",
       deviceType: "Desktop",
       screenResolution: "1920x1080",
+      windowSize: "1200x800",
     };
 
     fetch(webhook.url, {

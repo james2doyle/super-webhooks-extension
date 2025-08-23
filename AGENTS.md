@@ -21,6 +21,7 @@ This is a Chrome extension (Manifest V3) that allows users to manage webhooks an
 - Dynamic webhook menu generation based on stored webhooks
 - Data extraction (page titles, link titles, image alt text) before sending to webhooks
 - Two-click deletion confirmation for webhook management
+- Device information including browser, OS, device type, screen resolution, and browser window size
 
 ## Development
 
@@ -73,14 +74,14 @@ Webhooks are stored in Chrome local storage as:
 - Parent menu: "Send to Webhook"
 - Dynamic child menus created for each registered webhook
 - Supports page, link, image, and selection contexts
-- Enhanced payloads with metadata, timestamps, and context-specific data
+- Enhanced payloads with metadata, timestamps, context-specific data, screen resolution, and browser window size
 
 ## Implemented Features (v2.0 Status)
 
 ✅ **Core Functionality**
 - Webhook registration, editing, deletion with validation
 - Context menu integration for all content types
-- Enhanced data collection (metadata, timestamps, selected text)
+- Enhanced data collection (metadata, timestamps, selected text, device information including screen resolution and browser window size)
 - Webhook testing with response time feedback
 - Smart notifications with emoji feedback (✅/❌/⏳)
 - Error handling with toast notifications

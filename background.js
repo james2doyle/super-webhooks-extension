@@ -363,6 +363,12 @@ function extractDataAndSend(
     screenHeight: window.screen.height,
   });
 
+  // Function to get browser window size, executed in content script
+  const getWindowSize = () => ({
+    windowWidth: window.innerWidth,
+    windowHeight: window.innerHeight,
+  });
+
   if (type === "page" || type === "selection") {
     codeToExecute = () => ({
       title: document.title,
@@ -468,7 +474,7 @@ function extractDataAndSend(
     };
   }
 
-  // Execute both scripts: one for page data and one for screen resolution
+  // Execute scripts: one for page data, one for screen resolution, and one for window size
   Promise.all([
     chrome.scripting.executeScript({
       target: { tabId: tabId },
@@ -479,7 +485,11 @@ function extractDataAndSend(
       target: { tabId: tabId },
       func: getScreenResolution,
     }),
-  ]).then(([injectionResults, resolutionResults]) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      func: getWindowSize,
+    }),
+  ]).then(([injectionResults, resolutionResults, windowResults]) => {
     if (chrome.runtime.lastError) {
       console.error(
         "Script injection failed:",
@@ -492,6 +502,9 @@ function extractDataAndSend(
     const screenResolution = resolutionResults?.[0]
       ? resolutionResults[0].result
       : { screenWidth: null, screenHeight: null };
+    const windowSize = windowResults?.[0]
+      ? windowResults[0].result
+      : { windowWidth: null, windowHeight: null };
 
     // Get browser, OS, and device type using chrome.runtime and navigator.userAgent
     chrome.runtime.getPlatformInfo((platformInfo) => {
@@ -535,6 +548,9 @@ function extractDataAndSend(
           deviceType: deviceType,
           screenResolution: screenResolution.screenWidth
             ? `${screenResolution.screenWidth}x${screenResolution.screenHeight}`
+            : null,
+          windowSize: windowSize.windowWidth
+            ? `${windowSize.windowWidth}x${windowSize.windowHeight}`
             : null,
         };
 
