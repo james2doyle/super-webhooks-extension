@@ -289,4 +289,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Claude Code (Anthropic)** for AI-assisted development and architecture guidance
 - The **ADHD developer community** for inspiration and hyperfocus superpowers
 
+Logo is from https://www.thiings.co/things/crochet-hook
+
 Forked from [clawfire/chrome-webhook-extension by Thibault Milan](https://github.com/clawfire/chrome-webhook-extension)
