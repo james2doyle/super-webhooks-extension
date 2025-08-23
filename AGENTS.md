@@ -1,10 +1,10 @@
-# AGENTS.md
+# Super Webhooks Development Guide
 
 This file provides guidance to agents when working with code in this repository.
 
 ## Project Overview
 
-This is a Chrome extension (Manifest V3) that allows users to manage webhooks and send webpage URLs to registered webhook endpoints via context menus. The extension is designed to integrate with automation workflows like N8N.
+This is a Chrome extension (Manifest V3) called Super Webhooks that allows users to manage webhooks and send webpage URLs to registered webhook endpoints via context menus. The extension is designed to integrate with automation workflows like N8N.
 
 ## Architecture
 

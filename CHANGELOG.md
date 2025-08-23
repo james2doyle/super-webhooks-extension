@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Webhook Manager Chrome Extension will be documented in this file.
+All notable changes to the Super Webhooks Chrome Extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -97,7 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-06-26
 
 ### Added
-- **Initial release** of Webhook Manager Chrome Extension
+- **Initial release** of Super Webhooks Chrome Extension
 - **Basic webhook management** with add, edit, delete functionality
 - **Context menu integration** for pages, links, images, and selected text
 - **Enhanced data collection** with page metadata extraction

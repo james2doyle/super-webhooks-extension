@@ -1,12 +1,6 @@
-# Webhook Manager Chrome Extension v2.0
+# Super Webhooks Chrome Extension
 
-This extension was born out of an irresistible drive to solve a specific problem: the need to send URLs of elements on a webpage directly to my N8N workflow for automating my tech watch. In the world of software development, finding no existing solutions that support the latest Chrome Manifest V3 was not just a challenge—it was an unavoidable call to action. For someone with ADHD, the impulse to dive deep into a problem and craft a solution isn't just a choice; it's often an innate response that cannot be ignored.
-
-The rapid creation of the first prototype within an hour and the additional enhancements over the next two hours are reflections of how ADHD can fuel intense periods of focus and productivity, known as hyperfocus. This intense engagement with tasks that capture our interest is a common trait among those with ADHD, leading us to achieve remarkable feats in bursts of passion and creativity.
-
-This project isn't merely a functional tool; it's a personal statement and a beacon for others in the tech industry who might find themselves similarly driven by their neurodivergent traits. It serves as a reminder that our unique wiring can lead to powerful bursts of innovation and that embracing this can lead to practical, impactful solutions. Here's to all the software developers living with ADHD: Your intense need to solve problems, create solutions, or improve systems is not just a challenge—it's also your superpower.
-
-## ✨ What's New in v2.0
+![project logo](images/logo_w_text.jpeg)
 
 ### 🎨 **Complete UI Redesign**
 - **Modern card-based interface** with professional design system
@@ -235,6 +229,7 @@ Configure rate limits per webhook to prevent API abuse:
 - **manifest.json**: Chrome extension manifest (Manifest V3)
 - **background.js**: Service worker handling context menus, webhook management, and queue processing
 - **popup.html/popup.js**: Modern tabbed UI for webhook registration and settings management
+- **modal.html/modal.js**: Additional modal that is shown where there are additional details to attach
 - **Chrome Storage**: Local storage for webhook persistence and settings
 
 ### Queue System
@@ -283,42 +278,15 @@ Contributions are welcome! Please:
 3. Make changes and reload extension
 4. Test across different webpage contexts
 
-## Changelog
-
-### v2.0.0 (2024-06-28)
-- **MAJOR UI REDESIGN**: Complete interface overhaul with modern card-based design
-- **NEW**: Rate limiting system with configurable per-webhook limits
-- **NEW**: Intelligent queue management with real-time notifications
-- **NEW**: Tabbed interface separating Webhooks and Settings
-- **NEW**: Collapsible form design for better space utilization
-- **NEW**: Enhanced accessibility with keyboard navigation
-- **NEW**: Configurable notification update intervals
-- **NEW**: Added an optional 'Add Note' modal to include free-form text with webhook payloads.
-- **IMPROVED**: Form validation and error handling
-- **IMPROVED**: Button states and visual feedback
-- **IMPROVED**: Typography and spacing consistency
-- **IMPROVED**: Test webhook functionality with enhanced payloads
-- **IMPROVED**: Device information now includes browser window size in addition to screen resolution
-
-### v1.0.0 (2024-06-26)
-- Initial release with basic webhook management
-- Context menu integration for pages, links, images, and text
-- Webhook testing and validation
-- Chrome storage integration
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-## Author
-
-**Thibault Milan**
-- Website: [thibaultmilan.com](https://thibaultmilan.com)
-- Email: hello@thibaultmilan.com
-
-## Acknowledgments
+## Acknowledgements
 
 - **Font Awesome** for icons used throughout the interface
 - **PureCSS** for the foundational CSS framework
 - **Claude Code (Anthropic)** for AI-assisted development and architecture guidance
 - The **ADHD developer community** for inspiration and hyperfocus superpowers
+
+Forked from [clawfire/chrome-webhook-extension by Thibault Milan](https://github.com/clawfire/chrome-webhook-extension)

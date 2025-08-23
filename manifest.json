@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Webhook Manager",
+  "name": "Super Webhooks",
   "description": "A Chrome extension that allows you to send data to webhooks.",
-  "version": "3.0",
+  "version": "1.0",
   "permissions": [
     "storage",
     "contextMenus",
@@ -15,8 +15,10 @@
     "default_popup": "popup.html",
     "default_icon": {
       "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
+      "64": "images/icon64.png",
+      "128": "images/icon128.png",
+      "256": "images/icon256.png",
+      "512": "images/icon512.png"
     }
   },
   "background": {
@@ -24,7 +26,9 @@
   },
   "icons": {
     "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "64": "images/icon64.png",
+    "128": "images/icon128.png",
+    "256": "images/icon256.png",
+    "512": "images/icon512.png"
   }
 }
