@@ -247,7 +247,8 @@ function editWebhook(index) {
     document.getElementById("form-title").innerHTML =
       '<i class="fa fa-edit"></i> Edit Webhook';
     document.getElementById("save-btn-text").textContent = "Update Webhook";
-    document.getElementById("webhookForm").dataset.index = index;
+    const form = document.getElementById("webhookForm");
+    form.dataset.index = index;
 
     // Scroll to form
     setTimeout(() => {
@@ -387,16 +388,17 @@ function testWebhook(index, buttonElement) {
  * to that of adding a new webhook.
  */
 function clearForm() {
-  document.getElementById("url").value = "";
-  document.getElementById("name").value = "";
-  document.getElementById("rateLimit").value = "";
-  document.getElementById("enableNoteModalWebhook").checked = false;
-
   // Reset form UI
   document.getElementById("form-title").innerHTML =
     '<i class="fa fa-plus"></i> Add New Webhook';
   document.getElementById("save-btn-text").textContent = "Save Webhook";
-  delete document.getElementById("webhookForm").dataset.index;
+
+  // Get form element and clear dataset
+  const form = document.getElementById("webhookForm");
+  delete form.dataset.index;
+
+  // Reset form fields
+  form.reset();
 }
 
 /**
@@ -495,8 +497,9 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   document.getElementById("webhookForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const url = document.getElementById("url").value.trim();
-    const name = document.getElementById("name").value.trim();
+    const formData = new FormData(e.target);
+    const url = formData.get("url").trim();
+    const name = formData.get("name").trim();
 
     if (!url || !name) {
       showError("Both URL and name are required.");
@@ -508,11 +511,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const rateLimit = document.getElementById("rateLimit").value.trim();
+    const rateLimit = formData.get("rateLimit").trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit, 10) : 0;
-    const enableNoteModal = document.getElementById(
-      "enableNoteModalWebhook",
-    ).checked;
+    const enableNoteModal = formData.get("enableNoteModalWebhook") === "on";
 
     if (rateLimit && (Number.isNaN(rateLimitValue) || rateLimitValue < 0)) {
       showError("Rate limit must be a positive number (seconds).");
@@ -527,7 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const webhooks = data.webhooks;
-      const index = document.getElementById("webhookForm").dataset.index;
+      const index = e.target.dataset.index;
       const isEditing = index !== undefined;
 
       if (isEditing) {
