@@ -42,6 +42,10 @@
 - **Secure Storage**: All webhook information is securely stored using Chrome's local storage
 - **Settings Management**: Configurable notification update intervals and future expandability
 
+### Custom fields
+
+Read about custom fields in the [CUSTOM_FIELDS.md](CUSTOM_FIELDS.md) file.
+
 ## Installation
 
 ### From Source
