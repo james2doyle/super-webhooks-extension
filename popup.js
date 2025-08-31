@@ -409,6 +409,11 @@ function editWebhook(index) {
     document.getElementById("rateLimit").value = webhook.rateLimit || "";
     document.getElementById("enableNoteModalWebhook").checked =
       webhook.enableNoteModal || false;
+    document.getElementById("customFieldsRaw").value =
+      webhook.customFieldsRaw || "";
+    document.getElementById("customFields").value = JSON.stringify(
+      webhook.customFields || "",
+    );
 
     // Update form UI for editing
     document.getElementById("form-title").innerHTML =
@@ -598,6 +603,33 @@ function initializeTabs() {
   });
 }
 
+function initializeCustomFields() {
+  document.querySelectorAll(".custom-fields-input").forEach((field) => {
+    const originalRowCount = parseInt(field.getAttribute("rows") || 3, 10);
+    field.addEventListener("focus", () => {
+      field.setAttribute("rows", originalRowCount + 7);
+    });
+    field.addEventListener("blue", () => {
+      field.setAttribute("rows", originalRowCount);
+    });
+    field.addEventListener("input", () => {
+      const value = field.value || "";
+      const parseField = field.nextElementSibling;
+      const parseError = parseField.nextElementSibling;
+      parseError.innerHTML = "";
+      if (value.length > 0 && parseField && parseError) {
+        const newValue = parseAllLinesAsDSL(value);
+        newValue.forEach((val) => {
+          if (val.type === "error") {
+            parseError.innerHTML = val.message;
+          }
+        });
+        parseField.value = JSON.stringify(newValue);
+      }
+    });
+  });
+}
+
 /**
  * Initializes the functionality for showing and hiding the webhook form.
  * It sets up event listeners for the "Add Webhook" button and the form's close button.
@@ -655,6 +687,7 @@ function initializeFormToggle() {
  */
 document.addEventListener("DOMContentLoaded", () => {
   initializeTabs();
+  initializeCustomFields();
   initializeFormToggle();
 
   /**
@@ -681,6 +714,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const rateLimit = formData.get("rateLimit").trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit, 10) : 0;
     const enableNoteModal = formData.get("enableNoteModalWebhook") === "on";
+    const customFieldsRaw = formData.get("customFieldsRaw").trim();
+    const customFields = JSON.parse(formData.get("customFields").trim());
 
     if (rateLimit && (Number.isNaN(rateLimitValue) || rateLimitValue < 0)) {
       showError("Rate limit must be a positive number (seconds).");
@@ -705,6 +740,8 @@ document.addEventListener("DOMContentLoaded", () => {
           name,
           rateLimit: rateLimitValue,
           enableNoteModal,
+          customFieldsRaw,
+          customFields,
         };
       } else {
         // Add new webhook
@@ -713,6 +750,8 @@ document.addEventListener("DOMContentLoaded", () => {
           name,
           rateLimit: rateLimitValue,
           enableNoteModal,
+          customFieldsRaw,
+          customFields,
         });
       }
 
