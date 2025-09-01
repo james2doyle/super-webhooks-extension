@@ -17,6 +17,7 @@ function renderField(field) {
     case "password":
     case "email":
     case "date":
+    case "url":
     case "color":
       return `<div>
           <label for="${field.id}" class="${commonLabelProps}">${field.label}</label>

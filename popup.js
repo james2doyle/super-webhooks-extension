@@ -32,6 +32,7 @@ function parseDslLine(line, index) {
       case "email":
       case "date":
       case "color":
+      case "url":
       case "hidden": {
         // Syntax: type name [defaultValue] "placeholder"
         let placeholder = '""';

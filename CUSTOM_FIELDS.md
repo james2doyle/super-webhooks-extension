@@ -42,6 +42,9 @@ select Severity normal [normal,low,high,critical] "Select a severity"
 # A password field (works like text, but hides input)
 password Secret "" "Enter a secure password"
 
+# A url field
+url Link "" "Enter a full url"
+
 # A multi-line textarea
 textarea Bio "I am a developer who loves creating..." "Tell us a bit about yourself"
 
