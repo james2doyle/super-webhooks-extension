@@ -3,7 +3,12 @@
 ![project logo](images/logo_w_text.jpeg)
 
 ![main form with cards](images/demo-1.png)
+
 ![editing a single card](images/demo-2.png)
+
+![edit care with many fields](images/demo-3.png)
+
+![resulting modal for many fields](images/demo-4.png)
 
 ### 🎨 **Complete UI Redesign**
 - **Modern card-based interface** with professional design system

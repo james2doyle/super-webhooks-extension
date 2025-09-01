@@ -1,5 +1,9 @@
 # Form DSL: A Simple Language for Dynamic Form Generation
 
+![edit care with many fields](images/demo-3.png)
+
+![resulting modal for many fields](images/demo-4.png)
+
 A lightweight, human-readable Domain-Specific Language (DSL) for defining web form structures. This parser converts simple, single-line text commands into structured JSON objects, perfect for dynamically generating form components in a web application.
 
 ## ✨ Features
