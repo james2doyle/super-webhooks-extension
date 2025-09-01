@@ -4,11 +4,14 @@
 
 ![main form with cards](images/demo-1.png)
 
-![editing a single card](images/demo-2.png)
-
-![edit care with many fields](images/demo-3.png)
-
-![resulting modal for many fields](images/demo-4.png)
+<details>
+  <summary>Additional Images</summary>
+  <div>
+    <p><img src="images/demo-2.png" alt="editing a single card" /></p>
+    <p><img src="images/demo-3.png" alt="edit care with many fields" /></p>
+    <p><img src="images/demo-4.png" alt="resulting modal for many fields" /></p>
+  </div>
+</details>
 
 ### 🎨 **Complete UI Redesign**
 - **Modern card-based interface** with professional design system
