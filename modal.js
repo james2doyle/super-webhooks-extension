@@ -96,26 +96,43 @@ function renderFieldsFromCustomFields(fields) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const noteForm = document.getElementById("note-form");
-  const noteTextarea = document.getElementById("note-content"); // Keep this for initial focus
+  chrome.storage.local.get("pendingWebhook", (data) => {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "Error retrieving pendingWebhook:",
+        chrome.runtime.lastError,
+      );
+      return;
+    }
+    const pendingWebhook = data.pendingWebhook;
+    if (pendingWebhook) {
+      console.log("Fetched pendingWebhook:", pendingWebhook);
+      // Now you can use pendingWebhook in your modal.html
+      // For example, to display it:
+      document.getElementById("webhook-display-area").textContent =
+        JSON.stringify(pendingWebhook, null, 2);
+      document.getElementById("custom-field-output").innerHTML =
+        renderFieldsFromCustomFields(pendingWebhook.webhook.customFields);
+      // focus first field
+    } else {
+      console.log("No pendingWebhook found in storage.");
+    }
+  });
 
-  // Focus the textarea automatically when the modal opens
-  noteTextarea.focus();
+  const customFieldsForm = document.getElementById("custom-fields-form");
 
   // Function to handle form submission
   function handleFormSubmit(event) {
     event.preventDefault(); // Prevent the default form submission
 
     // Use FormData to easily get all form values
-    const formData = new FormData(noteForm);
-    // Get the value by the 'name' attribute of the textarea
-    const note = formData.get("note-content").trim();
+    const formData = new FormData(customFieldsForm);
+    const customFields = Object.fromEntries([...formData.entries()]);
 
-    // Send the note content back to the background script
     chrome.runtime.sendMessage(
       {
-        type: "sendWebhookWithNote",
-        note: note,
+        type: "sendWebhookWithCustomFields",
+        customFields,
       },
       () => {
         // Close the modal window after the message has been sent
@@ -125,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Handle form submission
-  noteForm.addEventListener("submit", handleFormSubmit);
+  customFieldsForm.addEventListener("submit", handleFormSubmit);
 
   // Handle Cancel button click
   const cancelButton = document.getElementById("cancel-btn");

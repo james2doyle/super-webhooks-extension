@@ -244,7 +244,7 @@ function switchTab(tabName) {
 /**
  * Creates and returns a DOM element representing a webhook card for display in the list.
  * Includes webhook details, meta badges, and action buttons (test, edit, delete).
- * @param {object} hook - The webhook object containing properties like `name`, `url`, `rateLimit`, `enableNoteModal`.
+ * @param {object} hook - The webhook object containing properties like `name`, `url`, `rateLimit`, `customFields`.
  * @param {number} index - The index of the webhook in the array, used for actions like editing and deleting.
  * @returns {HTMLElement} The created webhook card DOM element.
  */
@@ -278,11 +278,11 @@ function createWebhookCard(hook, index) {
     meta.appendChild(rateBadge);
   }
 
-  if (hook.enableNoteModal) {
-    const noteBadge = document.createElement("span");
-    noteBadge.className = "badge badge-notes-enabled";
-    noteBadge.innerHTML = '<i class="fa fa-sticky-note"></i> Notes Enabled';
-    meta.appendChild(noteBadge);
+  if (hook.customFields) {
+    const customBadge = document.createElement("span");
+    customBadge.className = "badge badge-customs-enabled";
+    customBadge.innerHTML = '<i class="fa fa-pen-field"></i> Fields';
+    meta.appendChild(customBadge);
   }
 
   // Actions
@@ -407,8 +407,6 @@ function editWebhook(index) {
     document.getElementById("url").value = webhook.url;
     document.getElementById("name").value = webhook.name;
     document.getElementById("rateLimit").value = webhook.rateLimit || "";
-    document.getElementById("enableNoteModalWebhook").checked =
-      webhook.enableNoteModal || false;
     document.getElementById("customFieldsRaw").value =
       webhook.customFieldsRaw || "";
     document.getElementById("customFields").value = JSON.stringify(
@@ -497,7 +495,7 @@ function testWebhook(index, buttonElement) {
       favicon: "https://example.com/favicon.ico",
       linkTitle: "Title if it was a link type",
       altText: "Image alt text if it was a link type",
-      note: "Additional note content if there was some",
+      customFields: { note: "Additional note content if there was some" },
       selectedText: "The selected text if there was a selection",
       browser: "Chrome/139.0.0.0",
       operatingSystem: "mac",
@@ -713,7 +711,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rateLimit = formData.get("rateLimit").trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit, 10) : 0;
-    const enableNoteModal = formData.get("enableNoteModalWebhook") === "on";
     const customFieldsRaw = formData.get("customFieldsRaw").trim();
     const customFields = JSON.parse(formData.get("customFields").trim());
 
@@ -739,7 +736,6 @@ document.addEventListener("DOMContentLoaded", () => {
           url,
           name,
           rateLimit: rateLimitValue,
-          enableNoteModal,
           customFieldsRaw,
           customFields,
         };
@@ -749,7 +745,6 @@ document.addEventListener("DOMContentLoaded", () => {
           url,
           name,
           rateLimit: rateLimitValue,
-          enableNoteModal,
           customFieldsRaw,
           customFields,
         });
