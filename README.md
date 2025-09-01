@@ -3,6 +3,7 @@
 ![project logo](images/logo_w_text.jpeg)
 
 ![main form with cards](images/demo-1.png)
+
 ![editing a single card](images/demo-2.png)
 
 ### 🎨 **Complete UI Redesign**
