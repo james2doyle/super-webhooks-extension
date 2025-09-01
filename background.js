@@ -239,7 +239,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
               url: "modal.html",
               type: "popup",
               width: 500,
-              height: 400,
+              height: 600,
             });
           });
         } else {

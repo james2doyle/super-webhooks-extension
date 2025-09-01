@@ -212,6 +212,9 @@
       .flex {
         display: flex;
       }
+      .flex-col {
+        flex-direction: column;
+      }
       .h-4 {
         height: calc(var(--spacing) * 4);
       }
@@ -558,7 +561,7 @@
 <body>
   <form id="custom-fields-form">
     <h2>Custom fields</h2>
-    <div id="custom-field-output" class="mb-4"></div>
+    <div id="custom-field-output" class="mb-4 flex flex-col gap-3"></div>
     <div class="buttons mb-4">
       <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
       <button type="submit" id="send-btn" class="btn btn-primary">Send</button>
