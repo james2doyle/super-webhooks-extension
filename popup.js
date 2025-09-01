@@ -17,12 +17,18 @@ function parseDslLine(line, index) {
       message: `Invalid line: "${line}". Requires at least a type and a name.`,
     };
 
-  const [type, rawName, ...rest] = tokens;
+  const [fullType, rawName, ...rest] = tokens;
   const name = rawName.charAt(0).toLowerCase() + rawName.slice(1);
   const id = `${name}-${index}`;
   const label = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  const isRequired = fullType.includes("*");
+
+  const type = fullType.replace("*", "");
 
   const baseField = { id, type: type.toLowerCase(), name, label };
+  if (isRequired) {
+    baseField.required = true;
+  }
   let currentTokens = [...rest];
 
   try {

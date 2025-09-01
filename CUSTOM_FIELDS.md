@@ -39,6 +39,9 @@ text Username "@example_user" "Enter your username"
 number Rating 3 1 5 1
 select Severity normal [normal,low,high,critical] "Select a severity"
 
+# A required field
+text* Username "@example_user" "Enter your username"
+
 # A password field (works like text, but hides input)
 password Secret "" "Enter a secure password"
 
@@ -65,6 +68,13 @@ color Theme #3b82f6 "Choose a theme color"
 
 # A hidden field (won't be visible in the form)
 hidden SessionID "abc-123-xyz"
+
+# --- A bug report ---
+text* Title "Issue title or name"
+textarea Details "Enter the details about this issue and what the expected outcome is"
+textarea* Steps "What steps are required to recreate this issue?"
+select* Severity normal [normal,low,high,critical] "Select a severity"
+text* Reporter "Enter your name"
 ```
 
 And here is the output HTML for that example above:

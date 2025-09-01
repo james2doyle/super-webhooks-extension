@@ -21,13 +21,13 @@ function renderField(field) {
     case "color":
       return `<div>
           <label for="${field.id}" class="${commonLabelProps}">${field.label}</label>
-          <input type="${field.type}" name="${field.name}" id="${field.id}" value="${field.defaultValue}" placeholder="${field.placeholder}" class="${commonInputProps}">
+          <input type="${field.type}" name="${field.name}" id="${field.id}" value="${field.defaultValue}" ${field.required ? "required" : ""} placeholder="${field.placeholder}" class="${commonInputProps}">
       </div>`;
 
     case "textarea":
       return `<div>
           <label for="${field.id}" class="${commonLabelProps}">${field.label}</label>
-          <textarea name="${field.name}" id="${field.id}" placeholder="${field.placeholder}" class="${commonInputProps} h-28">${field.defaultValue}</textarea>
+          <textarea name="${field.name}" id="${field.id}" ${field.required ? "required" : ""} placeholder="${field.placeholder}" class="${commonInputProps} h-28">${field.defaultValue}</textarea>
       </div>`;
 
     case "number":
@@ -38,13 +38,13 @@ function renderField(field) {
           : "";
       return `<div>
           <label for="${field.id}" class="${commonLabelProps}">${field.label} ${displayValue}</label>
-          <input type="${field.type}" name="${field.name}" id="${field.id}" value="${field.defaultValue}" min="${field.min}" max="${field.max}" step="${field.step}" class="${commonInputProps}">
+          <input type="${field.type}" name="${field.name}" id="${field.id}" value="${field.defaultValue}" min="${field.min}" max="${field.max}" step="${field.step}" ${field.required ? "required" : ""} class="${commonInputProps}">
       </div>`;
     }
 
     case "checkbox":
       return `<div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border">
-          <input type="checkbox" name="${field.name}" id="${field.id}" ${field.isChecked ? "checked" : ""} class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+          <input type="checkbox" name="${field.name}" id="${field.id}" ${field.required ? "required" : ""} ${field.isChecked ? "checked" : ""} class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
           <label for="${field.id}" class="text-gray-800">${field.label}</label>
       </div>`;
 
@@ -61,7 +61,7 @@ function renderField(field) {
 
       return `<div>
           <label for="${field.id}" class="${commonLabelProps}">${field.label}</label>
-          <select name="${field.name}" id="${field.id}" class="${commonInputProps}">
+          <select name="${field.name}" id="${field.id}" class="${commonInputProps}" ${field.required ? "required" : ""}>
               ${placeholderOption}
               ${optionsHtml}
           </select>
@@ -72,7 +72,7 @@ function renderField(field) {
       const radioButtonsHtml = field.options
         .map(
           (opt) => `<div class="flex items-center gap-3">
-            <input type="radio" id="${field.id}-${opt}" name="${field.name}" value="${opt}" ${opt === field.defaultValue ? "checked" : ""} class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+            <input type="radio" id="${field.id}-${opt}" name="${field.name}" value="${opt}" ${opt === field.defaultValue ? "checked" : ""} ${field.required ? "required" : ""} class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
             <label for="${field.id}-${opt}" class="text-gray-800">${opt}</label>
         </div>`,
         )
