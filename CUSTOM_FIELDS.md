@@ -45,9 +45,6 @@ text* Username "@example_user" "Enter your username"
 # A password field (works like text, but hides input)
 password Secret "" "Enter a secure password"
 
-# A url field
-url Link "" "Enter a full url"
-
 # A multi-line textarea
 textarea Bio "I am a developer who loves creating..." "Tell us a bit about yourself"
 
@@ -68,6 +65,9 @@ color Theme #3b82f6 "Choose a theme color"
 
 # A hidden field (won't be visible in the form)
 hidden SessionID "abc-123-xyz"
+
+# A url field
+url Link "" "Enter a full url"
 
 # --- A bug report ---
 text* Title "Issue title or name"
@@ -141,6 +141,10 @@ And here is the output HTML for that example above:
     <input type="color" name="theme" id="theme-9" placeholder="Choose a theme color" value="#3b82f6">
   </div>
   <input type="hidden" name="sessionID" id="sessionID-10" value="">
+  <div>
+    <label for="link-11">Link</label>
+    <input type="url" name="link" id="link-11" placeholder="Enter a full url" value="">
+  </div>
   <button type="submit">Submit</button>
 </form>
 ```
@@ -151,7 +155,7 @@ Here are examples of all supported field types, along with their DSL syntax and 
 
 ### `text`
 
-For standard single-line text inputs. Also works for `password`, `email`, `date`, `color`, and `hidden` types.
+For standard single-line text inputs. Also works for `password`, `email`, `date`, `color`, `url`, and `hidden` types.
 
 **DSL:**
 
