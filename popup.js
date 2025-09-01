@@ -1,4 +1,171 @@
 /**
+ * Parses a single line of the DSL into a structured field object.
+ * Handles various input types and their specific syntaxes.
+ * @param {string} line The raw string for a single line from the DSL input.
+ * @param {number} index The line number, used to generate unique IDs and for error reporting.
+ * @returns {object|null} A structured object representing the form field, an error object if parsing fails, or null if the line is empty.
+ */
+function parseDslLine(line, index) {
+  if (!line.trim()) return null;
+
+  // This regex splits the line by spaces, but keeps quoted strings together.
+  const tokens = line.match(/"[^"]+"|\S+/g) || [];
+  if (tokens.length < 2)
+    return {
+      id: `error-${index}`,
+      type: "error",
+      message: `Invalid line: "${line}". Requires at least a type and a name.`,
+    };
+
+  const [type, rawName, ...rest] = tokens;
+  const name = rawName.charAt(0).toLowerCase() + rawName.slice(1);
+  const id = `${name}-${index}`;
+  const label = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+  const baseField = { id, type: type.toLowerCase(), name, label };
+  let currentTokens = [...rest];
+
+  try {
+    switch (baseField.type) {
+      case "text":
+      case "password":
+      case "email":
+      case "date":
+      case "color":
+      case "hidden": {
+        // Syntax: type name [defaultValue] "placeholder"
+        let placeholder = '""';
+        const lastToken = currentTokens[currentTokens.length - 1];
+        // Check if the last token is a quoted string, assume it's the placeholder
+        if (lastToken?.startsWith('"')) {
+          placeholder = currentTokens.pop(); // remove and get the last element
+        }
+
+        // Whatever is left is the default value. For these types, it should be a single token.
+        const defaultValue = currentTokens[0] || "";
+        return {
+          ...baseField,
+          defaultValue: defaultValue.replace(/"/g, ""),
+          placeholder: placeholder.replace(/"/g, ""),
+        };
+      }
+
+      case "textarea": {
+        // Syntax: textarea name [defaultValue] "placeholder"
+        let placeholder = '""';
+        const lastToken = currentTokens[currentTokens.length - 1];
+        // Check if the last token is a quoted string, assume it's the placeholder
+        if (lastToken?.startsWith('"')) {
+          placeholder = currentTokens.pop(); // remove and get the last element
+        }
+
+        // Everything else is the default value, joined by spaces.
+        const defaultValue = currentTokens.join(" ").replace(/"/g, "");
+        return {
+          ...baseField,
+          defaultValue,
+          placeholder: placeholder.replace(/"/g, ""),
+        };
+      }
+
+      case "number":
+      case "range": {
+        // Syntax: number name [defaultValue] [min] [max] [step] "label (optional)"
+        const labelOverride = currentTokens.find((t) => t.startsWith('"'));
+        if (labelOverride) {
+          baseField.label = labelOverride.replace(/"/g, "");
+          currentTokens = currentTokens.filter((t) => !t.startsWith('"'));
+        }
+        const [defaultValue = 0, min = "", max = "", step = ""] = currentTokens;
+        return { ...baseField, defaultValue, min, max, step };
+      }
+
+      case "checkbox": {
+        // Syntax: checkbox name [checked?] "label"
+        const labelText = (
+          currentTokens.find((t) => t.startsWith('"')) || `"${label}"`
+        ).replace(/"/g, "");
+        currentTokens = currentTokens.filter((t) => !t.startsWith('"'));
+        const isChecked =
+          currentTokens[0] === "true" || currentTokens[0] === "checked";
+        return { ...baseField, label: labelText, isChecked };
+      }
+
+      case "select": {
+        // Syntax: select name [defaultValue] [options] "placeholder"
+        const placeholder = (
+          currentTokens.find((t) => t.startsWith('"')) || '""'
+        ).replace(/"/g, "");
+        currentTokens = currentTokens.filter((t) => !t.startsWith('"'));
+        const optionsString =
+          currentTokens.find((t) => t.startsWith("[") && t.endsWith("]")) ||
+          "[]";
+        currentTokens = currentTokens.filter((t) => !t.startsWith("["));
+        const options = optionsString
+          .slice(1, -1)
+          .split(",")
+          .map((opt) => opt.trim());
+        const defaultValue = currentTokens[0] || "";
+        return { ...baseField, defaultValue, options, placeholder };
+      }
+
+      case "radio": {
+        // Syntax: radio name [defaultValue] [options] "Group Label"
+        const groupLabel = (
+          currentTokens.find((t) => t.startsWith('"')) || `"${label}"`
+        ).replace(/"/g, "");
+        currentTokens = currentTokens.filter((t) => !t.startsWith('"'));
+        const optionsString =
+          currentTokens.find((t) => t.startsWith("[") && t.endsWith("]")) ||
+          "[]";
+        currentTokens = currentTokens.filter((t) => !t.startsWith("["));
+        const options = optionsString
+          .slice(1, -1)
+          .split(",")
+          .map((opt) => opt.trim());
+        const defaultValue = currentTokens[0] || "";
+        return {
+          ...baseField,
+          type: "radioGroup",
+          label: groupLabel,
+          options,
+          defaultValue,
+        };
+      }
+
+      default:
+        return {
+          id: `error-${index}`,
+          type: "error",
+          message: `Unknown field type: "${type}"`,
+        };
+    }
+  } catch (e) {
+    return {
+      id: `error-${index}`,
+      type: "error",
+      message: `Error parsing line: "${line}". Details: ${e.message}`,
+    };
+  }
+}
+
+/**
+ * Parses a all lines of the DSL into a structured array of field objects.
+ * @param {string} multilineString The raw string for a all lines from the DSL input.
+ * @returns {array} A structured array of objects representing the form fields.
+ */
+function parseAllLinesAsDSL(multilineString) {
+  return (
+    multilineString
+      .split("\n")
+      .filter((line) => line.trim() && !line.trim().startsWith("#"))
+      .map(parseDslLine)
+      // removes bad lines
+      .filter(Boolean)
+  );
+}
+
+/**
  * Validates if a given URL is a valid HTTP or HTTPS URL.
  * @param {string} url - The URL string to validate.
  * @returns {boolean} True if the URL is valid (http/https), false otherwise.
@@ -77,7 +244,7 @@ function switchTab(tabName) {
 /**
  * Creates and returns a DOM element representing a webhook card for display in the list.
  * Includes webhook details, meta badges, and action buttons (test, edit, delete).
- * @param {object} hook - The webhook object containing properties like `name`, `url`, `rateLimit`, `enableNoteModal`.
+ * @param {object} hook - The webhook object containing properties like `name`, `url`, `rateLimit`, `customFields`.
  * @param {number} index - The index of the webhook in the array, used for actions like editing and deleting.
  * @returns {HTMLElement} The created webhook card DOM element.
  */
@@ -111,11 +278,11 @@ function createWebhookCard(hook, index) {
     meta.appendChild(rateBadge);
   }
 
-  if (hook.enableNoteModal) {
-    const noteBadge = document.createElement("span");
-    noteBadge.className = "badge badge-notes-enabled";
-    noteBadge.innerHTML = '<i class="fa fa-sticky-note"></i> Notes Enabled';
-    meta.appendChild(noteBadge);
+  if (hook.customFields) {
+    const customBadge = document.createElement("span");
+    customBadge.className = "badge badge-customs-enabled";
+    customBadge.innerHTML = '<i class="fa fa-pen-field"></i> Fields';
+    meta.appendChild(customBadge);
   }
 
   // Actions
@@ -240,8 +407,11 @@ function editWebhook(index) {
     document.getElementById("url").value = webhook.url;
     document.getElementById("name").value = webhook.name;
     document.getElementById("rateLimit").value = webhook.rateLimit || "";
-    document.getElementById("enableNoteModalWebhook").checked =
-      webhook.enableNoteModal || false;
+    document.getElementById("customFieldsRaw").value =
+      webhook.customFieldsRaw || "";
+    document.getElementById("customFields").value = JSON.stringify(
+      webhook.customFields || "",
+    );
 
     // Update form UI for editing
     document.getElementById("form-title").innerHTML =
@@ -325,7 +495,7 @@ function testWebhook(index, buttonElement) {
       favicon: "https://example.com/favicon.ico",
       linkTitle: "Title if it was a link type",
       altText: "Image alt text if it was a link type",
-      note: "Additional note content if there was some",
+      customFields: { note: "Additional note content if there was some" },
       selectedText: "The selected text if there was a selection",
       browser: "Chrome/139.0.0.0",
       operatingSystem: "mac",
@@ -431,6 +601,33 @@ function initializeTabs() {
   });
 }
 
+function initializeCustomFields() {
+  document.querySelectorAll(".custom-fields-input").forEach((field) => {
+    const originalRowCount = parseInt(field.getAttribute("rows") || 3, 10);
+    field.addEventListener("focus", () => {
+      field.setAttribute("rows", originalRowCount + 7);
+    });
+    field.addEventListener("blue", () => {
+      field.setAttribute("rows", originalRowCount);
+    });
+    field.addEventListener("input", () => {
+      const value = field.value || "";
+      const parseField = field.nextElementSibling;
+      const parseError = parseField.nextElementSibling;
+      parseError.innerHTML = "";
+      if (value.length > 0 && parseField && parseError) {
+        const newValue = parseAllLinesAsDSL(value);
+        newValue.forEach((val) => {
+          if (val.type === "error") {
+            parseError.innerHTML = val.message;
+          }
+        });
+        parseField.value = JSON.stringify(newValue);
+      }
+    });
+  });
+}
+
 /**
  * Initializes the functionality for showing and hiding the webhook form.
  * It sets up event listeners for the "Add Webhook" button and the form's close button.
@@ -488,6 +685,7 @@ function initializeFormToggle() {
  */
 document.addEventListener("DOMContentLoaded", () => {
   initializeTabs();
+  initializeCustomFields();
   initializeFormToggle();
 
   /**
@@ -513,7 +711,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rateLimit = formData.get("rateLimit").trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit, 10) : 0;
-    const enableNoteModal = formData.get("enableNoteModalWebhook") === "on";
+    const customFieldsRaw = formData.get("customFieldsRaw").trim();
+    const customFields = JSON.parse(formData.get("customFields").trim());
 
     if (rateLimit && (Number.isNaN(rateLimitValue) || rateLimitValue < 0)) {
       showError("Rate limit must be a positive number (seconds).");
@@ -537,7 +736,8 @@ document.addEventListener("DOMContentLoaded", () => {
           url,
           name,
           rateLimit: rateLimitValue,
-          enableNoteModal,
+          customFieldsRaw,
+          customFields,
         };
       } else {
         // Add new webhook
@@ -545,7 +745,8 @@ document.addEventListener("DOMContentLoaded", () => {
           url,
           name,
           rateLimit: rateLimitValue,
-          enableNoteModal,
+          customFieldsRaw,
+          customFields,
         });
       }
 

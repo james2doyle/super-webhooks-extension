@@ -2,6 +2,9 @@
 
 ![project logo](images/logo_w_text.jpeg)
 
+![main form with cards](images/demo-1.png)
+![editing a single card](images/demo-2.png)
+
 ### 🎨 **Complete UI Redesign**
 - **Modern card-based interface** with professional design system
 - **Tabbed navigation** separating Webhooks and Settings
@@ -21,17 +24,17 @@
 - **Enhanced button states** for test/edit/delete actions
 - **Keyboard accessibility** throughout the interface
 - **Author attribution** with link to developer
-- **New 'Add Note' Modal**: Seamlessly attach optional notes to any webhook payload, enhancing context and flexibility.
+- **New 'Custom Fields' Modal**: Seamlessly [attach optional custom fields to any webhook payload](CUSTOM_FIELDS.md), enhancing context and flexibility.
 
 ## Features
 
 ### Core Functionality
 - **Register and Manage Webhooks**: Add, edit, and delete webhooks with friendly names, URLs, and rate limits
-- **Context Menu Integration**: Right-click on any page, link, image, or selected text to send data to registered webhooks. This now includes an optional modal for adding notes.
+- **Context Menu Integration**: Right-click on any page, link, image, or selected text to send data to registered webhooks. This now includes an optional modal for adding custom fields.
 - **Enhanced Data Collection**: Automatically extracts page metadata, timestamps, and context-specific information including device details (browser window size and screen resolution)
 - **Webhook Testing**: Test webhooks directly from the popup with response time and status feedback
 - **Smart Notifications**: Desktop notifications with emoji feedback (✅/❌/⏳) for webhook status and queue updates
-- **Add Notes to Webhooks**: Attach optional free-form text notes to any webhook payload via a dedicated modal window.
+- **Add Custom Fields to Webhooks**: Attach optional [custom fields to any webhook payload](CUSTOM_FIELDS.md) via a dedicated modal window.
 - **Device Details**: Includes browser, operating system, device type, screen resolution, and browser window size
 
 ### Advanced Features
@@ -41,6 +44,10 @@
 - **Retry Mechanism**: Automatic retry (up to 3 attempts) for failed webhook calls with progressive delays
 - **Secure Storage**: All webhook information is securely stored using Chrome's local storage
 - **Settings Management**: Configurable notification update intervals and future expandability
+
+### Custom fields
+
+Read about custom fields in the [CUSTOM_FIELDS.md](CUSTOM_FIELDS.md) file.
 
 ## Installation
 
@@ -68,6 +75,7 @@ Right-click on any webpage element:
 - **Links**: Right-click on any link
 - **Images**: Right-click on any image  
 - **Text**: Select text and right-click
+- **Video**: Select video and right-click
 - Choose **"Send to Webhook"** → Select your desired webhook
 
 ### Settings
@@ -91,7 +99,7 @@ The extension sends different payload structures depending on the context.
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": null,
   "altText": null,
-  "note": "Additional note content from the modal",
+  "customFields": { "note": "Additional note content from a custom note field if there was one" },
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "mac",
   "deviceType": "Desktop",
@@ -113,7 +121,7 @@ The extension sends different payload structures depending on the context.
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": null,
   "altText": null,
-  "note": "Additional note content from the modal",
+  "customFields": { "note": "Additional note content from a custom note field if there was one" },
   "selectedText": "This is the selected text from the page",
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "mac",
@@ -136,7 +144,7 @@ The extension sends different payload structures depending on the context.
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": "Link title attribute",
   "altText": null,
-  "note": "Additional note content from the modal",
+  "customFields": { "note": "Additional note content from a custom note field if there was one" },
   "selectedText": "This is the selected text from the page",
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "mac",
@@ -159,7 +167,7 @@ The extension sends different payload structures depending on the context.
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": null,
   "altText": "Image alt text",
-  "note": "Additional note content from the modal",
+  "customFields": { "note": "Additional note content from a custom note field if there was one" },
   "selectedText": "This is the selected text from the page",
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "android",
@@ -182,7 +190,7 @@ The extension sends different payload structures depending on the context.
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": null,
   "altText": null,
-  "note": "Additional note content from the modal",
+  "customFields": { "note": "Additional note content from a custom note field if there was one" },
   "selectedText": "This is the selected text from the page",
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "android",
@@ -205,7 +213,7 @@ The extension sends different payload structures depending on the context.
   "favicon": "https://example.com/favicon.ico",
   "linkTitle": "Title if it was a link type",
   "altText": "Image alt text if it was a link type",
-  "note": "Additional note content if there was some",
+  "customFields": { "note": "Additional note content from a custom note field if there was one" },
   "selectedText": "The selected text if there was a selection",
   "browser": "Chrome/139.0.0.0",
   "operatingSystem": "win",
@@ -247,8 +255,8 @@ chrome-webhook-extension/
 ├── background.js          # Service worker (queue system, context menus)
 ├── popup.html             # Modern tabbed UI
 ├── popup.js               # UI logic and form handling
-├── modal.html             # HTML for the 'Add Note' modal
-├── modal.js               # Logic for the 'Add Note' modal
+├── modal.html             # HTML for the 'Custom Fields' modal
+├── modal.js               # Logic for the 'Custom Fields' modal
 ├── images/                # Extension icons
 ├── AGENTS.md              # Development guide
 └── README.md              # This file

@@ -69,7 +69,7 @@ function addToQueue(webhookUrl, payload, webhookName, rateLimit = 0) {
       queue: [],
       lastSent: 0,
       timer: null,
-      rateLimit: rateLimit,
+      rateLimit,
     });
   }
 
@@ -224,17 +224,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       const index = parseInt(indexPart, 10);
       const webhook = data.webhooks[index];
       if (webhook) {
-        // Check if note modal is enabled for this specific webhook
-        const enableNoteModal = webhook.enableNoteModal;
+        const hasCustomFields = Array.isArray(webhook.customFields);
 
-        if (enableNoteModal) {
+        if (hasCustomFields) {
           // Store data needed for sending the webhook later
           const pendingWebhook = {
-            webhook: webhook,
-            info: info,
+            webhook,
+            info,
             tabId: tab.id,
           };
-          chrome.storage.local.set({ pendingWebhook: pendingWebhook }, () => {
+          chrome.storage.local.set({ pendingWebhook }, () => {
             // Open the modal window
             chrome.windows.create({
               url: "modal.html",
@@ -278,11 +277,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 // Listener for messages from the modal
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-  if (request.type === "sendWebhookWithNote") {
+  if (request.type === "sendWebhookWithCustomFields") {
     chrome.storage.local.get("pendingWebhook", (data) => {
       if (data.pendingWebhook) {
         const { webhook, info, tabId } = data.pendingWebhook;
-        const additionalContent = request.note;
+        const customFields = request.customFields;
 
         // Determine context and extract data
         if (info.linkUrl) {
@@ -292,7 +291,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             "link",
             tabId,
             null,
-            additionalContent,
+            customFields,
             info.pageUrl,
           );
         } else if (info.srcUrl) {
@@ -302,7 +301,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             info.mediaType === "video" ? "video" : "image",
             tabId,
             null,
-            additionalContent,
+            customFields,
             info.pageUrl,
           );
         } else {
@@ -313,7 +312,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             type,
             tabId,
             info.selectionText,
-            additionalContent,
+            customFields,
             info.pageUrl,
           );
         }
@@ -343,7 +342,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
  * @param {'page'|'link'|'image'|'video'|'selection'} type - The context type of the data.
  * @param {number} tabId - The ID of the tab where the action originated.
  * @param {string|null} selectionText - The selected text, if the context is 'selection'.
- * @param {string} additionalContent - Any additional user-provided content (e.g., a note from the modal).
+ * @param {Object} customFields - Any additional user-provided content from the custom fields.
  * @param {string} pageUrl - The URL of the page where the context menu was clicked.
  */
 function extractDataAndSend(
@@ -352,7 +351,7 @@ function extractDataAndSend(
   type,
   tabId,
   selectionText,
-  additionalContent,
+  customFields,
   pageUrl,
 ) {
   let codeToExecute;
@@ -541,7 +540,7 @@ function extractDataAndSend(
           favicon: extractedData?.favicon || null,
           linkTitle: extractedData?.linkTitle || null,
           altText: extractedData?.altText || null,
-          note: String(additionalContent).length > 0 ? additionalContent : null,
+          customFields: customFields ?? null,
           selectedText: selectionText,
           browser: browserVersion,
           operatingSystem: os,

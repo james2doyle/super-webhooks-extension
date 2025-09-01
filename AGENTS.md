@@ -95,6 +95,10 @@ Webhooks are stored in Chrome local storage as:
 - Configurable notification update intervals (1-60 seconds)
 - Smart queue detection (only shows notifications when actually queued)
 
+✅ **Custom Fields**
+- User-provided custom fields on a per-webhook basis
+- Additional details in the [CUSTOM_FIELDS.md](CUSTOM_FIELDS.md)
+
 ✅ **Modern UI Design (v2.0)**
 - Complete interface redesign with card-based layout
 - Professional design system with CSS custom properties
@@ -160,7 +164,7 @@ The project follows a standard Chrome extension structure with these key files:
 - **manifest.json**: Extension manifest defining permissions, background scripts, and UI components
 - **background.js**: Service worker handling context menu creation, webhook management, and HTTP requests
 - **popup.html/popup.js**: Extension popup UI for webhook registration and management
-- **modal.html/modal.js**: Modal window for adding notes to webhook payloads
+- **modal.html/modal.js**: Modal window for adding custom fields to webhook payloads
 - **images/**: Icon assets for the extension
 - **AGENTS.md**: Development guide and project documentation
 - **README.md**: User documentation and feature overview
