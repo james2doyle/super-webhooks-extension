@@ -6,6 +6,10 @@
 
 ![editing a single card](images/demo-2.png)
 
+![edit care with many fields](images/demo-3.png)
+
+![resulting modal for many fields](images/demo-4.png)
+
 ### 🎨 **Complete UI Redesign**
 - **Modern card-based interface** with professional design system
 - **Tabbed navigation** separating Webhooks and Settings
