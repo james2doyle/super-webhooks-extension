@@ -22,7 +22,7 @@ Each line in the DSL defines a single form field and generally follows this stru
 [input_type] [FieldName] [arguments...] "Label or Placeholder"
 ````
 
-* `[input_type]`: The type of form field (e.g., `text`, `number`, `select`).
+* `[input_type][*]`: The type of form field (e.g., `text`, `number`, `select`). The `*` denotes a `required` field
 * `[FieldName]`: The name for the field. It will be converted to `camelCase` for the JSON `name` property and `Capitalized` for the `label`.
 * `[arguments...]`: A series of optional values that configure the field, such as default values, min/max numbers, or select options. The order matters.
 * `"Quoted Text"`: Used for placeholders, labels, or group labels depending on the field type.
