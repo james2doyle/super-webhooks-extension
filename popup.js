@@ -285,7 +285,7 @@ function createWebhookCard(hook, index) {
     meta.appendChild(rateBadge);
   }
 
-  if (hook.customFields) {
+  if (hook.customFields && hook.customFields.length > 0) {
     const customBadge = document.createElement("span");
     customBadge.className = "badge badge-customs-enabled";
     customBadge.innerHTML = '<i class="fa fa-pen-field"></i> Fields';
@@ -719,7 +719,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const rateLimit = formData.get("rateLimit").trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit, 10) : 0;
     const customFieldsRaw = formData.get("customFieldsRaw").trim();
-    const customFieldsValue = formData.get("customFields").trim();
+    let customFieldsValue = formData.get("customFields").trim();
+    if (customFieldsRaw.length === 0) {
+      customFieldsValue = "[]";
+    }
     const customFields = customFieldsValue ? JSON.parse(customFieldsValue) : [];
 
     if (rateLimit && (Number.isNaN(rateLimitValue) || rateLimitValue < 0)) {
