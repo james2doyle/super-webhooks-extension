@@ -719,7 +719,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const rateLimit = formData.get("rateLimit").trim();
     const rateLimitValue = rateLimit ? parseInt(rateLimit, 10) : 0;
     const customFieldsRaw = formData.get("customFieldsRaw").trim();
-    const customFields = JSON.parse(formData.get("customFields").trim());
+    const customFieldsValue = formData.get("customFields").trim();
+    const customFields = customFieldsValue ? JSON.parse(customFieldsValue) : [];
 
     if (rateLimit && (Number.isNaN(rateLimitValue) || rateLimitValue < 0)) {
       showError("Rate limit must be a positive number (seconds).");
