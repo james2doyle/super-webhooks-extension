@@ -108,13 +108,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const pendingWebhook = data.pendingWebhook;
     if (pendingWebhook) {
       console.log("Fetched pendingWebhook:", pendingWebhook);
-      // Now you can use pendingWebhook in your modal.html
-      // For example, to display it:
+      // Create a display object with webhook and browser info
+      const webhookConfig = {
+        webhook: {
+          name: pendingWebhook.webhook.name,
+          url: pendingWebhook.webhook.url,
+          customFields: pendingWebhook.webhook.customFields,
+          rateLimit: pendingWebhook.webhook.rateLimit,
+        },
+        browserInfo: pendingWebhook.browserInfo || null,
+      };
       document.getElementById("webhook-display-area").textContent =
-        JSON.stringify(pendingWebhook, null, 2);
+        JSON.stringify(webhookConfig, null, 2);
       document.getElementById("custom-field-output").innerHTML =
         renderFieldsFromCustomFields(pendingWebhook.webhook.customFields);
-      // focus first field
     } else {
       console.log("No pendingWebhook found in storage.");
     }

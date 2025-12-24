@@ -233,13 +233,62 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             info,
             tabId: tab.id,
           };
-          chrome.storage.local.set({ pendingWebhook }, () => {
-            // Open the modal window
-            chrome.windows.create({
-              url: "modal.html",
-              type: "popup",
-              width: 500,
-              height: 600,
+
+          // Get screen resolution and window size from the tab
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: () => ({
+              screenWidth: window.screen.width,
+              screenHeight: window.screen.height,
+              windowWidth: window.innerWidth,
+              windowHeight: window.innerHeight,
+            }),
+          }).then((results) => {
+            const screenData = results?.[0]?.result || {
+              screenWidth: null,
+              screenHeight: null,
+              windowWidth: null,
+              windowHeight: null,
+            };
+
+            chrome.runtime.getPlatformInfo((platformInfo) => {
+              const browserInfo = navigator.userAgent;
+              const os = platformInfo.os || "Unknown OS";
+              const browserVersion = browserInfo.match(/(Chrome)\/([0-9.]+)/)
+                ? `${browserInfo.match(/(Chrome)\/([0-9.]+)/)[0]}`
+                : browserInfo;
+
+              // Simple device type detection (can be more robust if needed)
+              const deviceType =
+                navigator.userAgent.match(/Mobi/) ||
+                navigator.userAgent.match(/Android/i) ||
+                navigator.userAgent.match(/iPhone|iPad|iPod/i)
+                  ? "Mobile"
+                  : screenData.screenWidth && screenData.screenWidth <= 768
+                    ? "Tablet"
+                    : "Desktop";
+
+              pendingWebhook.browserInfo = {
+                browser: browserVersion,
+                operatingSystem: os,
+                deviceType: deviceType,
+                screenResolution: screenData.screenWidth
+                  ? `${screenData.screenWidth}x${screenData.screenHeight}`
+                  : null,
+                windowSize: screenData.windowWidth
+                  ? `${screenData.windowWidth}x${screenData.windowHeight}`
+                  : null,
+              };
+
+              chrome.storage.local.set({ pendingWebhook }, () => {
+                // Open the modal window
+                chrome.windows.create({
+                  url: "modal.html",
+                  type: "popup",
+                  width: 500,
+                  height: 600,
+                });
+              });
             });
           });
         } else {

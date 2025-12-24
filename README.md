@@ -39,7 +39,7 @@
 ### Core Functionality
 - **Register and Manage Webhooks**: Add, edit, and delete webhooks with friendly names, URLs, and rate limits
 - **Context Menu Integration**: Right-click on any page, link, image, or selected text to send data to registered webhooks. This now includes an optional modal for adding custom fields.
-- **Enhanced Data Collection**: Automatically extracts page metadata, timestamps, and context-specific information including device details (browser window size and screen resolution)
+- **Enhanced Data Collection**: Automatically extracts page metadata, timestamps, and context-specific information including detailed device information (browser, operating system, device type, screen resolution, and browser window size)
 - **Webhook Testing**: Test webhooks directly from the popup with response time and status feedback
 - **Smart Notifications**: Desktop notifications with emoji feedback (✅/❌/⏳) for webhook status and queue updates
 - **Add Custom Fields to Webhooks**: Attach optional [custom fields to any webhook payload](CUSTOM_FIELDS.md) via a dedicated modal window.
